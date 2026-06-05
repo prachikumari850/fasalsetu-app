@@ -1,0 +1,1108 @@
+🌾 FasalSetu
+AI-Powered Crop Lifecycle Monitoring & Smart Insurance Verification Platform for PMFBY
+
+Your idea has evolved from a simple crop damage detection app into a complete ecosystem that helps farmers throughout the crop season while also solving insurance fraud and claim verification challenges.
+
+🚨 Problem Statement
+
+Current PMFBY challenges:
+
+Manual crop damage assessment
+Slow claim processing
+Fraudulent insurance claims
+Lack of real-time crop monitoring
+No continuous crop history
+Farmers receive support only after damage occurs
+High dependency on field surveyors
+Difficulty verifying genuine crop ownership and damage
+💡 Proposed Solution
+
+Instead of verifying claims only after damage occurs:
+
+Create a Digital Crop Journey for every farm.
+
+Farm Registration
+       ↓
+Crop Monitoring
+       ↓
+AI Advisory
+       ↓
+Crop Health Tracking
+       ↓
+Damage Detection
+       ↓
+Fraud Detection
+       ↓
+Insurance Claim Verification
+
+The system continuously builds evidence throughout the crop season.
+
+👨‍🌾 Farmer Mobile App (Flutter)
+1. Farmer Registration
+Mobile OTP Login
+Profile Creation
+PMFBY Policy Details (optional)
+Crop Selection
+2. Farm Registration
+
+Farmer:
+
+Draws farm boundary on map
+Enters area
+Selects crop type
+
+Stored:
+
+Farm ID
+Boundary Polygon
+Area
+Village
+Crop Type
+3. Digital Crop Lifecycle Tracking
+
+Farmer uploads images at key stages:
+
+Stage 1
+
+Sowing
+
+Stage 2
+
+Germination
+
+Stage 3
+
+Vegetative Growth
+
+Stage 4
+
+Flowering
+
+Stage 5
+
+Pre-Harvest
+
+Only 4–5 uploads per season.
+
+This creates:
+
+Digital Crop History
+4. AI Crop Health Analysis
+
+For every image:
+
+AI analyzes:
+
+Disease Detection
+Leaf Blight
+Rust
+Mildew
+Other diseases
+Pest Detection
+Aphids
+Caterpillars
+Locust damage
+Nutrient Deficiency
+Nitrogen deficiency
+Potassium deficiency
+Phosphorus deficiency
+Crop Health Score
+
+Example:
+
+Health Score = 82/100
+5. AI Advisory System
+
+Farmer receives suggestions:
+
+Example:
+
+Detected:
+Early Blight
+
+Recommendation:
+Apply fungicide within 5 days.
+
+Benefits:
+
+Better yield
+Preventive care
+Reduced crop losses
+🛡️ Smart Insurance Module
+Claim Submission
+
+When damage occurs:
+
+Farmer:
+
+Captures live images
+Selects damage reason
+Submits claim
+AI Damage Assessment
+
+Detect:
+
+Flood damage
+Drought damage
+Pest destruction
+Disease outbreaks
+Lodged crops
+
+Output:
+
+Damage Severity = 68%
+🔍 Multi-Layer Fraud Detection Engine
+
+This is your major innovation.
+
+Layer 1: Geo-Fencing
+
+Check:
+
+Photo GPS
+=
+Farm Boundary
+
+If outside boundary:
+
+High Fraud Risk
+Layer 2: Crop Lifecycle Verification
+
+System checks:
+
+Was this crop monitored earlier?
+
+Example:
+
+June - Healthy
+July - Healthy
+August - Healthy
+September - Flood
+
+Higher confidence.
+
+Layer 3: Duplicate Image Detection
+
+Detect:
+
+Reused images
+Previous season images
+Duplicate submissions
+
+Using:
+
+Image Hashing
+Layer 4: Timestamp Validation
+
+Check:
+
+Capture Date
+
+vs
+
+Current Crop Season
+Layer 5: Multi-Point Farm Sampling
+
+Require images from:
+
+North
+South
+East
+West
+Center
+
+Prevents:
+
+Uploading only worst damaged corner
+Layer 6: Weather Verification
+
+Verify:
+
+Rainfall
+Flood alerts
+Drought conditions
+
+Example:
+
+Claim = Flood
+
+Weather = No Rain
+
+Fraud Risk ↑
+Layer 7: Satellite Verification (Future Scope)
+
+Compare claim with:
+
+NDVI
+Satellite imagery
+🏆 Farm Trust Score (Innovation)
+
+Instead of simply:
+
+Fraud / Not Fraud
+
+Generate:
+
+Farm Trust Score
+
+Factors:
+
+Factor	Weight
+GPS Consistency	25
+Crop History	25
+Image Originality	20
+Weather Match	15
+Documents	15
+
+Output:
+
+Trust Score = 91/100
+
+Benefits:
+
+Faster approvals
+Reduced manual verification
+🖥️ Insurance Officer Dashboard (Web)
+
+Built using React.
+
+Claim Management
+
+View:
+
+Pending claims
+Approved claims
+Rejected claims
+Crop Timeline Viewer
+
+Officer sees:
+
+June - Sowing
+July - Growth
+August - Flowering
+September - Damage
+
+instead of one damage image.
+
+AI Damage Report
+
+Display:
+
+Damage Percentage
+Confidence Score
+Fraud Dashboard
+
+Display:
+
+Trust Score
+GPS Verification
+Weather Validation
+Duplicate Detection
+Claim Recommendation
+
+System suggests:
+
+Approve
+Reject
+Needs Inspection
+
+Officer takes final decision.
+
+🏛️ Admin Dashboard (Web)
+
+For PMFBY administrators.
+
+Farmer Analytics
+Total farmers
+Active farmers
+Registered farms
+Claim Analytics
+Total claims
+Approval rates
+District-wise claims
+Disease Analytics
+Most common diseases
+Outbreak locations
+Fraud Analytics
+High-risk claims
+Fraud heatmaps
+Duplicate submissions
+Disaster Monitoring
+
+Track:
+
+Flood affected farms
+Drought affected farms
+Pest outbreak zones
+🚀 Key Innovations
+Innovation 1
+Crop Lifecycle-Based Insurance Verification
+
+Most systems:
+
+One Damage Image
+
+Your system:
+
+Entire Crop Journey
+Innovation 2
+Farm Trust Score
+
+Dynamic credibility score based on multiple factors.
+
+Innovation 3
+AI Advisory + Insurance Together
+
+Most solutions only help after damage.
+
+Your solution helps:
+
+Before
+During
+After
+
+crop cultivation.
+
+Innovation 4
+Geo-Fenced Crop Evidence
+
+Every image becomes location-verified evidence.
+
+Innovation 5
+Faster PMFBY Claims
+
+Trusted farms can get:
+
+Fast Track Processing
+
+while suspicious claims get deeper review.
+
+## TechStack
+
+📱 Mobile App (Farmer App)
+Framework
+Flutter
+Packages
+image_picker (camera capture)
+geolocator (GPS)
+flutter_map (map support)
+dio (API calls)
+flutter_secure_storage (secure storage)
+Why?
+One codebase
+Android support
+Free and open source
+🖥️ Web Dashboard (Admin + Insurance Officer)
+Frontend
+React
+Vite
+Tailwind CSS
+Dashboard Components
+React Router
+Recharts (analytics charts)
+React Leaflet (maps)
+Why?
+Fast development
+Modern UI
+Completely free
+⚡ Backend API
+Framework
+FastAPI
+Additional Libraries
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-multipart
+Why?
+
+Because your AI models are already Python-based.
+
+Flutter
+   ↓
+FastAPI
+   ↓
+YOLOv8
+
+No need for Node.js.
+
+🤖 AI / Machine Learning
+Crop Disease Detection
+YOLOv8
+Ultralytics YOLOv8
+
+Detect:
+
+Pest attacks
+Disease spots
+Flood damage
+Damaged crop regions
+Crop Health Classification
+EfficientNet
+
+Using:
+
+TensorFlow
+PyTorch
+
+Classify:
+
+Healthy
+Mild Damage
+Moderate Damage
+Severe Damage
+Computer Vision
+OpenCV
+OpenCV
+
+Used for:
+
+Image preprocessing
+Image enhancement
+Duplicate image detection
+Fraud Detection
+Image Hashing
+
+Libraries:
+
+imagehash
+Pillow
+
+Detect:
+
+Duplicate images
+Reused images
+🗄️ Database + Auth + Storage
+Best Free Option
+Supabase
+Supabase
+
+Use:
+
+PostgreSQL
+
+Store:
+
+Users
+Farms
+Claims
+Crop History
+Trust Scores
+Supabase Auth
+
+For:
+
+OTP Login
+Role Management
+
+Roles:
+
+Farmer
+Officer
+Admin
+Supabase Storage
+
+Store:
+
+Crop Images
+Documents
+Claim Images
+🛰️ Maps & Geo-Fencing
+OpenStreetMap
+OpenStreetMap
+Leaflet
+Leaflet
+Flutter Map
+Flutter Map
+
+Use for:
+
+Farm Boundary Drawing
+Geo-Fencing
+Location Verification
+
+No Google Maps billing.
+
+🌦️ Weather Verification
+Open-Meteo
+Open-Meteo
+
+Use for:
+
+Rainfall
+Temperature
+Humidity
+
+Claim validation:
+
+Farmer claims flood
+↓
+Check rainfall history
+
+100% free.
+
+📡 Satellite Data (Future Scope)
+Sentinel-2
+Copernicus Browser
+Google Earth Engine
+Google Earth Engine
+
+Use for:
+
+NDVI
+Crop health
+Flood verification
+
+For hackathon, mention as future enhancement.
+
+☁️ Hosting (FREE)
+React Dashboard
+Vercel
+Vercel
+
+Free deployment.
+
+FastAPI Backend
+Render
+Render
+
+Free tier available.
+
+AI Training
+Google Colab
+Google Colab
+
+Train:
+
+YOLOv8
+EfficientNet
+
+Free GPU access (limited but sufficient for a prototype).
+
+📂 Version Control
+GitHub
+GitHub
+
+Use:
+
+Source code
+CI/CD
+Collaboration
+🔐 Authentication & Security
+
+Using Supabase Auth:
+
+Farmers
+OTP Login
+Officers
+Email + Password
+Admins
+Email + Password
+
+Role-based access control through Supabase.
+
+📊 Analytics
+Charts
+Recharts
+
+Display:
+
+Claims
+Disease outbreaks
+Fraud statistics
+🏆 Final Architecture
+Farmer Flutter App
+          │
+          ▼
+      FastAPI
+          │
+ ┌────────┼─────────┐
+ ▼        ▼         ▼
+YOLOv8  EfficientNet Fraud Engine
+          │
+          ▼
+      Supabase
+(Postgres + Auth + Storage)
+          │
+          ▼
+React Dashboard
+(Admin + Insurance Officer)
+💰 Total Cost
+Component	Cost
+Flutter	₹0
+React	₹0
+FastAPI	₹0
+YOLOv8	₹0
+EfficientNet	₹0
+OpenCV	₹0
+Supabase	₹0 (free tier)
+OpenStreetMap	₹0
+Leaflet	₹0
+Open-Meteo	₹0
+Vercel	₹0
+Render	₹0
+Google Colab	₹0
+GitHub	₹0
+Total Prototype Cost: ₹0
+
+This is the stack I would personally choose for SIH or a college hackathon because every component is free, actively maintained, and fits your AI + insurance + dashboard + Flutter architecture without requiring any paid service.
+
+
+## Full Approach of The Project 
+
+Most students think:
+
+Flutter App
++
+AI Model
++
+Dashboard
+
+But a real project is actually a set of connected systems.
+
+For your AgriShield AI, imagine there are 6 major blocks:
+
+1. Farmer App (Flutter)
+
+2. Admin Dashboard (React)
+
+3. Insurance Officer Dashboard (React)
+
+4. FastAPI Backend
+
+5. Supabase
+
+6. AI Engine
+Complete Architecture
+                    ┌───────────────────┐
+                    │  React Dashboard  │
+                    │ Admin + Officer   │
+                    └─────────┬─────────┘
+                              │
+                              │ HTTPS API
+                              ▼
+
+┌────────────────────────────────────────────────┐
+│                FastAPI Backend                 │
+│                                                │
+│ Auth APIs                                      │
+│ Farm APIs                                      │
+│ Crop Upload APIs                               │
+│ Claim APIs                                     │
+│ AI APIs                                        │
+│ Fraud Detection APIs                           │
+└──────┬──────────────┬───────────────┬─────────┘
+       │              │               │
+       ▼              ▼               ▼
+
+┌──────────┐   ┌────────────┐   ┌──────────────┐
+│ Supabase │   │ YOLOv8 AI  │   │ Weather API  │
+│ Database │   │ OpenCV     │   │ Open-Meteo   │
+│ Storage  │   │ EfficientNet│  │              │
+└────┬─────┘   └────────────┘   └──────────────┘
+     ▲
+     │
+     │ HTTPS API
+     │
+┌────┴─────┐
+│ Flutter  │
+│ Farmer   │
+│ App      │
+└──────────┘
+Component 1: Flutter Farmer App
+
+This is only the UI.
+
+It contains:
+
+Login Screen
+
+Farm Registration
+
+Map Screen
+
+Crop Upload Screen
+
+AI Advisory Screen
+
+Claims Screen
+
+Profile Screen
+
+Flutter DOES NOT directly run AI.
+
+Flutter DOES NOT directly access database.
+
+Flutter simply calls APIs.
+
+Example:
+
+POST /api/upload-image
+Component 2: FastAPI Backend
+
+This is the brain.
+
+Everything goes through FastAPI.
+
+Example:
+
+Farmer uploads image.
+
+Flutter
+   ↓
+FastAPI
+
+FastAPI decides:
+
+Store image
+Run AI
+Save results
+Return response
+Component 3: Supabase Database
+
+Think of Supabase as your storage room.
+
+It stores:
+
+Farmers
+farmers
+id	name	phone
+Farms
+farms
+
+| id | farmer_id | area |
+
+Crop History
+crop_history
+
+| id | farm_id | image |
+
+Claims
+claims
+
+| id | farmer_id | status |
+
+Trust Scores
+trust_scores
+
+| farm_id | score |
+
+Component 4: Supabase Storage
+
+Images are NOT stored in PostgreSQL.
+
+Images go to Storage.
+
+Example:
+
+crop_image.jpg
+
+stored in:
+
+Supabase Storage
+
+Database only stores:
+
+image_url
+Example Upload Flow
+
+Farmer uploads image.
+
+Flutter
+    ↓
+FastAPI
+    ↓
+Supabase Storage
+
+Image URL returned:
+
+https://...
+
+Saved in database.
+
+Component 5: AI Engine
+
+Suppose farmer uploads:
+
+Rice Crop Image
+
+Flow:
+
+Flutter
+   ↓
+FastAPI
+   ↓
+YOLOv8
+
+YOLO detects:
+
+Leaf Blight
+
+Result:
+
+{
+  "disease":"Leaf Blight",
+  "confidence":94
+}
+
+Stored in database.
+
+EfficientNet
+
+Then image goes to:
+
+EfficientNet
+
+Predicts:
+
+Healthy
+Moderate
+Severe
+
+Example:
+
+{
+  "health_score":81
+}
+
+Saved to database.
+
+Component 6: Fraud Engine
+
+This is your unique module.
+
+Every claim passes through:
+
+Fraud Engine
+
+Checks:
+
+GPS
+Inside Boundary?
+Image Duplication
+Duplicate Image?
+Weather
+Rainfall Exists?
+Crop History
+Previous Images Available?
+
+Produces:
+
+{
+  "trust_score":91,
+  "fraud_risk":"LOW"
+}
+Insurance Officer Dashboard
+
+Built in React.
+
+Officer opens dashboard.
+
+Dashboard calls:
+
+GET /claims
+
+Backend returns:
+
+{
+ "farmer":"Rahul",
+ "damage":65,
+ "trust":91
+}
+
+Officer sees everything.
+
+How Flutter and Dashboard Stay Connected
+
+This is where many beginners get confused.
+
+Flutter and React NEVER talk directly.
+
+Wrong:
+
+Flutter
+   ↔
+React
+
+Correct:
+
+Flutter
+    ↓
+ FastAPI
+    ↑
+React Dashboard
+
+Both talk to the same backend.
+
+Example Real Scenario
+
+Farmer uploads crop image.
+
+Flutter
+
+calls:
+
+POST /crop/upload
+
+Backend:
+
+Stores image
+Runs AI
+Stores result
+
+in Supabase.
+
+Immediately:
+
+Insurance dashboard shows:
+
+New Crop Update
+
+because it reads the same database.
+
+Claim Submission Flow
+Farmer Side
+Submit Claim
+
+Flutter:
+
+POST /claim
+
+Backend:
+
+Save claim
+Run AI damage assessment
+Run fraud detection
+Calculate trust score
+
+Database:
+
+Claim Created
+
+Officer Dashboard:
+
+New Claim Appears
+
+without any extra work.
+
+Authentication Flow
+
+Supabase Auth handles login.
+
+Farmer
+OTP Login
+Officer
+Email Login
+Admin
+Email Login
+
+Role stored:
+
+farmer
+officer
+admin
+
+Backend checks role before allowing actions.
+
+Actual Folder Structure
+Flutter
+lib/
+
+auth/
+farm/
+crop/
+claims/
+advisory/
+profile/
+
+services/
+models/
+FastAPI
+backend/
+
+routes/
+services/
+models/
+ai/
+fraud/
+database/
+utils/
+React Dashboard
+src/
+
+pages/
+components/
+claims/
+analytics/
+admin/
+officer/
+
+services/
+Development Workflow
+Phase 1
+
+Build database schema.
+
+Supabase
+Phase 2
+
+Build FastAPI APIs.
+
+Login
+
+Farm Registration
+
+Crop Upload
+
+Claims
+Phase 3
+
+Build Flutter App.
+
+Connect APIs.
+
+Phase 4
+
+Train YOLOv8.
+
+Connect AI.
+
+Phase 5
+
+Build React Dashboard.
+
+Phase 6
+
+Add Fraud Detection Engine.
+
+Phase 7
+
+Deploy.
+
+Flutter APK
+
+React → Vercel
+
+FastAPI → Render
+
+Supabase → Cloud
+Final Mental Model
+
+Think of FastAPI as the central highway.
+
+Flutter App
+       │
+       ▼
+    FastAPI
+       │
+ ┌─────┼─────┐
+ ▼     ▼     ▼
+AI  Supabase Weather
+ │
+ ▼
+Trust Score
+ │
+ ▼
+React Dashboard
+
+The Flutter app and React dashboard never communicate directly. They are simply two different frontends connected to the same FastAPI backend and the same Supabase database, which keeps all farmer data, crop history, AI results, claims, and dashboard information synchronized automatically.
