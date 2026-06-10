@@ -5,10 +5,9 @@ import uuid
 from app.models.user import UserRole
 
 
-class UserCreate(BaseModel):
+class SendOtpRequest(BaseModel):
     email: EmailStr
-    full_name: str
-    phone: Optional[str] = None
+    full_name: Optional[str] = None
     preferred_lang: str = "hi"
 
     @field_validator("preferred_lang")
@@ -17,6 +16,46 @@ class UserCreate(BaseModel):
         if v not in ("en", "hi"):
             raise ValueError("preferred_lang must be 'en' or 'hi'")
         return v
+
+
+class VerifyOtpRequest(BaseModel):
+    email: EmailStr
+    otp: str
+
+    @field_validator("otp")
+    @classmethod
+    def validate_otp(cls, v: str) -> str:
+        v = v.strip()
+        if not v.isdigit() or len(v) != 6:
+            raise ValueError("OTP must be exactly 6 digits")
+        return v
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        if len(v) < 6:
+            raise ValueError("Password must be at least 6 characters")
+        return v
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    user: "UserResponse"
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    full_name: str
+    phone: Optional[str] = None
+    preferred_lang: str = "hi"
 
 
 class UserUpdate(BaseModel):
@@ -39,3 +78,6 @@ class UserResponse(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+TokenResponse.model_rebuild()
