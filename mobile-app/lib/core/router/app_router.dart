@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fasalsetu/features/crop/presentation/pages/crop_lifecycle_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fasalsetu/core/providers/auth_provider.dart';
@@ -47,6 +48,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final email = state.extra as String;
           return OtpPage(email: email);
+        },
+      ),
+      GoRoute(
+        path: '/farms/:farmId/lifecycle',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final farmId = state.pathParameters['farmId']!;
+          final farmName = state.extra as String? ?? 'Farm';
+          return CropLifecyclePage(
+            farmId: farmId,
+            farmName: farmName,
+          );
         },
       ),
       ShellRoute(

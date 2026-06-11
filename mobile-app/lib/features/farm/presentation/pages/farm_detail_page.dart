@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fasalsetu/core/constants/app_colors.dart';
+import 'package:fasalsetu/features/farm/presentation/providers/farm_provider.dart';
+import 'package:fasalsetu/shared/widgets/app_button.dart';
+import 'package:fasalsetu/shared/widgets/loading_widget.dart';
 
-class FarmDetailPage extends StatelessWidget {
+class FarmDetailPage extends ConsumerWidget {
   final String farmId;
   const FarmDetailPage({super.key, required this.farmId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Farm Detail'),
@@ -15,7 +20,21 @@ class FarmDetailPage extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
       ),
-      body: Center(child: Text('Farm: $farmId — Phase 10')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            AppButton(
+              label: 'View Crop Lifecycle',
+              onPressed: () => context.push(
+                '/farms/$farmId/lifecycle',
+                extra: 'My Farm',
+              ),
+              icon: Icons.timeline_rounded,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

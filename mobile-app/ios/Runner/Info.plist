@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSCameraUsageDescription</key>
+    <string>FasalSetu needs camera access to photograph your crops</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>FasalSetu needs photo library access to upload crop images</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>FasalSetu needs your location to geo-tag crop photos</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>FasalSetu needs your location to verify farm boundaries</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
