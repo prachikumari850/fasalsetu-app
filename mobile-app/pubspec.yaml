@@ -65,10 +65,10 @@ flutter:
   uses-material-design: true
   generate: true
 
-  assets:
-    - assets/images/
-    - assets/icons/
-    - assets/lottie/
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
+  #   - assets/lottie/
 
   fonts:
     - family: NotoSansDevanagari
