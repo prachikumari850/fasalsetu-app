@@ -32,9 +32,9 @@
   "otpTitle": "Verify OTP",
   "otpSubtitle": "Enter the 6-digit code sent to",
   "otpLabel": "Enter OTP",
-  "otpHint": "6-digit code",
+  "otpHint": "8-digit code",
   "otpRequired": "OTP is required",
-  "otpInvalid": "OTP must be 6 digits",
+  "otpInvalid": "OTP must be 8 digits",
   "otpResend": "Resend OTP",
   "otpResendIn": "Resend in {seconds}s",
   "@otpResendIn": {

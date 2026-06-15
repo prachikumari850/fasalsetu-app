@@ -160,29 +160,34 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               const SizedBox(height: 40),
 
               // OTP input boxes
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(
-                  AppConstants.otpLength,
-                  (index) => _OtpBox(
-                    controller: _controllers[index],
-                    focusNode: _focusNodes[index],
-                    onChanged: (value) {
-                      if (value.isNotEmpty &&
-                          index < AppConstants.otpLength - 1) {
-                        _focusNodes[index + 1].requestFocus();
-                      }
-                      if (value.isEmpty && index > 0) {
-                        _focusNodes[index - 1].requestFocus();
-                      }
-                      if (_isOtpComplete) {
-                        FocusScope.of(context).unfocus();
-                      }
-                      setState(() {});
-                    },
+              // OTP input boxes — Expanded ensures they always fit the screen width
+            Row(
+              children: List.generate(AppConstants.otpLength, (index) {
+                return Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      right: index == AppConstants.otpLength - 1 ? 0 : 6,
+                    ),
+                    child: _OtpBox(
+                      controller: _controllers[index],
+                      focusNode: _focusNodes[index],
+                      onChanged: (value) {
+                        if (value.isNotEmpty && index < AppConstants.otpLength - 1) {
+                          _focusNodes[index + 1].requestFocus();
+                        }
+                        if (value.isEmpty && index > 0) {
+                          _focusNodes[index - 1].requestFocus();
+                        }
+                        if (_isOtpComplete) {
+                          FocusScope.of(context).unfocus();
+                        }
+                        setState(() {});
+                      },
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
+            ),
 
               const SizedBox(height: 32),
 
@@ -234,7 +239,6 @@ class _OtpBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 48,
       height: 56,
       child: TextFormField(
         controller: controller,

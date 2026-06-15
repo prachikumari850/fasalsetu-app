@@ -35,6 +35,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         );
 
     final state = ref.read(otpSendProvider);
+
+    debugPrint('OTP send state: hasError=${state.hasError}, error=${state.error}');
     if (state.hasError) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -47,8 +49,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       return;
     }
 
+    debugPrint('Navigating to OTP page with email: ${_emailController.text.trim()}');
+
     if (mounted) {
-      context.push('/auth/otp', extra: _emailController.text.trim());
+  context.push(
+    '/auth/otp?email=${Uri.encodeComponent(_emailController.text.trim())}',
+  );
     }
   }
 
@@ -58,134 +64,131 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final lang = ref.watch(languageProvider);
     final otpState = ref.watch(otpSendProvider);
     final isLoading = otpState.isLoading;
-    final size = MediaQuery.sizeOf(context);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: SizedBox(
-            height: size.height -
-                MediaQuery.of(context).padding.top -
-                MediaQuery.of(context).padding.bottom,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 24),
 
-                  // Logo + Brand
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Icon(
-                      Icons.eco_rounded,
-                      color: Colors.white,
-                      size: 44,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.appName,
-                    style: Theme.of(context).textTheme.headlineLarge,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    l10n.tagline,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
+              // Logo + Brand
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: const Icon(
+                  Icons.eco_rounded,
+                  color: Colors.white,
+                  size: 44,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                l10n.appName,
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.tagline,
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
 
-                  const SizedBox(height: 48),
+              const SizedBox(height: 48),
 
-                  // Card
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.loginTitle,
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            l10n.loginSubtitle,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 24),
-                          AppTextField(
-                            label: l10n.emailLabel,
-                            hint: l10n.emailHint,
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            prefixIcon: const Icon(
-                              Icons.email_outlined,
-                              size: 20,
-                              color: AppColors.textHint,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return l10n.emailRequired;
-                              }
-                              final emailRegex = RegExp(
-                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                              );
-                              if (!emailRegex.hasMatch(value.trim())) {
-                                return l10n.emailInvalid;
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          AppButton(
-                            label: l10n.sendOtp,
-                            onPressed: isLoading ? null : _sendOtp,
-                            isLoading: isLoading,
-                            icon: Icons.send_rounded,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  // Language toggle
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              // Card
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _LanguageButton(
-                        label: l10n.english,
-                        isSelected: lang.languageCode == 'en',
-                        onTap: () =>
-                            ref.read(languageProvider.notifier).setLocale('en'),
+                      Text(
+                        l10n.loginTitle,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(width: 12),
-                      _LanguageButton(
-                        label: l10n.hindi,
-                        isSelected: lang.languageCode == 'hi',
-                        onTap: () =>
-                            ref.read(languageProvider.notifier).setLocale('hi'),
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.loginSubtitle,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 24),
+
+                      AppTextField(
+                        label: l10n.emailLabel,
+                        hint: l10n.emailHint,
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          size: 20,
+                          color: AppColors.textHint,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return l10n.emailRequired;
+                          }
+                          final emailRegex = RegExp(
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          );
+                          if (!emailRegex.hasMatch(value.trim())) {
+                            return l10n.emailInvalid;
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      AppButton(
+                        label: l10n.sendOtp,
+                        onPressed: isLoading ? null : _sendOtp,
+                        isLoading: isLoading,
+                        icon: Icons.send_rounded,
                       ),
                     ],
                   ),
+                ),
+              ),
 
-                  const SizedBox(height: 24),
+              const SizedBox(height: 32),
+
+              // Language toggle
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _LanguageButton(
+                    label: l10n.english,
+                    isSelected: lang.languageCode == 'en',
+                    onTap: () =>
+                        ref.read(languageProvider.notifier).setLocale('en'),
+                  ),
+                  const SizedBox(width: 12),
+                  _LanguageButton(
+                    label: l10n.hindi,
+                    isSelected: lang.languageCode == 'hi',
+                    onTap: () =>
+                        ref.read(languageProvider.notifier).setLocale('hi'),
+                  ),
                 ],
               ),
-            ),
+
+              const SizedBox(height: 24),
+            ],
           ),
         ),
       ),

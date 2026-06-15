@@ -26,8 +26,8 @@ class VerifyOtpRequest(BaseModel):
     @classmethod
     def validate_otp(cls, v: str) -> str:
         v = v.strip()
-        if not v.isdigit() or len(v) != 6:
-            raise ValueError("OTP must be exactly 6 digits")
+        if not v.isdigit() or len(v) != 8:
+            raise ValueError("OTP must be exactly 8 digits")
         return v
 
 

@@ -46,7 +46,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/otp',
         builder: (context, state) {
-          final email = state.extra as String;
+          // final email = state.extra as String;
+          final email = state.uri.queryParameters['email'] ?? '';
           return OtpPage(email: email);
         },
       ),

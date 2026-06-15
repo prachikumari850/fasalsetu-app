@@ -87,13 +87,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otpLabel => 'Enter OTP';
 
   @override
-  String get otpHint => '6-digit code';
+  String get otpHint => '8-digit code';
 
   @override
   String get otpRequired => 'OTP is required';
 
   @override
-  String get otpInvalid => 'OTP must be 6 digits';
+  String get otpInvalid => 'OTP must be 8 digits';
 
   @override
   String get otpResend => 'Resend OTP';

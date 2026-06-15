@@ -29,9 +29,9 @@
   "otpTitle": "OTP सत्यापित करें",
   "otpSubtitle": "इस पर भेजा गया 6-अंकीय कोड दर्ज करें",
   "otpLabel": "OTP दर्ज करें",
-  "otpHint": "6-अंकीय कोड",
+  "otpHint": "8-अंकीय कोड",
   "otpRequired": "OTP आवश्यक है",
-  "otpInvalid": "OTP 6 अंकों का होना चाहिए",
+  "otpInvalid": "OTP 8 अंकों का होना चाहिए",
   "otpResend": "OTP दोबारा भेजें",
   "otpResendIn": "{seconds} सेकंड में दोबारा भेजें",
   "@otpResendIn": {

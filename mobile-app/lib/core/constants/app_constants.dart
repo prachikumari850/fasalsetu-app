@@ -1,40 +1,59 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
+
 class AppConstants {
   AppConstants._();
 
-  // API
-  static const String apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:8000/api/v1',
-  );
+  // Platform-aware API URL
+  // - Flutter Web (browser): localhost:8000
+  // - Android emulator: 10.0.2.2:8000 (emulator's alias for host localhost)
+  // - iOS simulator: localhost:8000
+  // - Physical device: your machine's LAN IP e.g. 192.168.1.x:8000
+  static String get apiBaseUrl {
+    const envUrl = String.fromEnvironment('API_BASE_URL');
+    if (envUrl.isNotEmpty) return envUrl;
+
+    if (kIsWeb) return 'http://localhost:8000/api/v1';
+
+    try {
+      if (Platform.isAndroid) return 'http://10.0.2.2:8000/api/v1';
+    } catch (_) {}
+
+    return 'http://localhost:8000/api/v1';
+  }
 
   // Supabase
-  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  static const String supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: '',
+  );
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
+    defaultValue: '',
   );
 
   // Storage keys
-  static const String accessTokenKey = 'access_token';
+  static const String accessTokenKey  = 'access_token';
   static const String refreshTokenKey = 'refresh_token';
-  static const String userIdKey = 'user_id';
-  static const String userRoleKey = 'user_role';
-  static const String languageKey = 'preferred_lang';
+  static const String userIdKey       = 'user_id';
+  static const String userRoleKey     = 'user_role';
+  static const String languageKey     = 'preferred_lang';
 
   // Pagination
   static const int defaultPageSize = 20;
 
   // Image
-  static const int maxImageSizeBytes = 10 * 1024 * 1024; // 10 MB
-  static const double imageQuality = 85;
+  static const int maxImageSizeBytes = 10 * 1024 * 1024;
+  static const double imageQuality   = 85;
 
   // OTP
   static const int otpResendSeconds = 60;
-  static const int otpLength = 6;
+  static const int otpLength        = 8;
 
   // Map
   static const double defaultMapZoom = 15.0;
-  static const double indiaLat = 20.5937;
-  static const double indiaLng = 78.9629;
+  static const double indiaLat       = 20.5937;
+  static const double indiaLng       = 78.9629;
 
   // Trust score grades
   static const double gradeAMin = 80;

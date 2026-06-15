@@ -87,13 +87,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get otpLabel => 'OTP दर्ज करें';
 
   @override
-  String get otpHint => '6-अंकीय कोड';
+  String get otpHint => '8-अंकीय कोड';
 
   @override
   String get otpRequired => 'OTP आवश्यक है';
 
   @override
-  String get otpInvalid => 'OTP 6 अंकों का होना चाहिए';
+  String get otpInvalid => 'OTP 8 अंकों का होना चाहिए';
 
   @override
   String get otpResend => 'OTP दोबारा भेजें';
