@@ -78,26 +78,25 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         );
 
     final state = ref.read(otpVerifyProvider);
-    if (state.hasError) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.otpInvalid),
-            backgroundColor: AppColors.error,
-          ),
-        );
-        // Clear OTP fields on error
-        for (final c in _controllers) {
-          c.clear();
-        }
-        _focusNodes.first.requestFocus();
+
+    if (state.hasError && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.otpInvalid),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      for (final c in _controllers) {
+        c.clear();
       }
+      _focusNodes.first.requestFocus();
       return;
     }
 
-    if (mounted) {
-      context.go('/dashboard');
-    }
+    // Do NOT manually navigate here.
+    // authProvider state is now authenticated.
+    // GoRouter's redirect in appRouterProvider watches authProvider
+    // and will automatically redirect to /dashboard.
   }
 
   Future<void> _resendOtp() async {
@@ -161,33 +160,34 @@ class _OtpPageState extends ConsumerState<OtpPage> {
 
               // OTP input boxes
               // OTP input boxes — Expanded ensures they always fit the screen width
-            Row(
-              children: List.generate(AppConstants.otpLength, (index) {
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      right: index == AppConstants.otpLength - 1 ? 0 : 6,
+              Row(
+                children: List.generate(AppConstants.otpLength, (index) {
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        right: index == AppConstants.otpLength - 1 ? 0 : 6,
+                      ),
+                      child: _OtpBox(
+                        controller: _controllers[index],
+                        focusNode: _focusNodes[index],
+                        onChanged: (value) {
+                          if (value.isNotEmpty &&
+                              index < AppConstants.otpLength - 1) {
+                            _focusNodes[index + 1].requestFocus();
+                          }
+                          if (value.isEmpty && index > 0) {
+                            _focusNodes[index - 1].requestFocus();
+                          }
+                          if (_isOtpComplete) {
+                            FocusScope.of(context).unfocus();
+                          }
+                          setState(() {});
+                        },
+                      ),
                     ),
-                    child: _OtpBox(
-                      controller: _controllers[index],
-                      focusNode: _focusNodes[index],
-                      onChanged: (value) {
-                        if (value.isNotEmpty && index < AppConstants.otpLength - 1) {
-                          _focusNodes[index + 1].requestFocus();
-                        }
-                        if (value.isEmpty && index > 0) {
-                          _focusNodes[index - 1].requestFocus();
-                        }
-                        if (_isOtpComplete) {
-                          FocusScope.of(context).unfocus();
-                        }
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                );
-              }),
-            ),
+                  );
+                }),
+              ),
 
               const SizedBox(height: 32),
 

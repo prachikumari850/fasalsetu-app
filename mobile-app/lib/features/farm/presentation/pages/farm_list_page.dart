@@ -230,7 +230,7 @@ class _FarmCard extends StatelessWidget {
                     color: AppColors.warning,
                   ),
                   if (farm.boundary != null)
-                    _InfoChip(
+                    const _InfoChip(
                       icon: Icons.location_on_rounded,
                       label: 'GPS ✓',
                       color: AppColors.primary,

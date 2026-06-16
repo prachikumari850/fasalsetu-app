@@ -21,7 +21,7 @@ class BoundaryMapWidget extends StatefulWidget {
 
 class _BoundaryMapWidgetState extends State<BoundaryMapWidget> {
   final MapController _mapController = MapController();
-  LatLng _center = LatLng(
+  LatLng _center = const LatLng(
     AppConstants.indiaLat,
     AppConstants.indiaLng,
   );

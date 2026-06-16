@@ -44,9 +44,11 @@ class OtpVerifyNotifier extends AsyncNotifier<void> {
       final tokens = await ref
           .read(authRemoteDataSourceProvider)
           .verifyOtp(email: email, otp: otp);
+
+      // Save to secure storage AND update in-memory state
       await ref.read(authProvider.notifier).setAuthenticated(tokens);
 
-      // Update language based on user preference
+      // Update language preference
       await ref
           .read(languageProvider.notifier)
           .setLocale(tokens.user.preferredLang);

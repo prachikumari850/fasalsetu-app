@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fasalsetu/core/constants/app_colors.dart';
-import 'package:fasalsetu/features/farm/presentation/providers/farm_provider.dart';
 import 'package:fasalsetu/shared/widgets/app_button.dart';
-import 'package:fasalsetu/shared/widgets/loading_widget.dart';
 
 class FarmDetailPage extends ConsumerWidget {
   final String farmId;

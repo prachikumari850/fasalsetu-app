@@ -41,6 +41,7 @@ class AuthNotifier extends Notifier<AuthState> {
 
   @override
   AuthState build() {
+    // Start as unknown, resolve asynchronously
     _initialize();
     return const AuthState.unknown();
   }
@@ -52,52 +53,53 @@ class AuthNotifier extends Notifier<AuthState> {
       final role = await _storage.read(key: AppConstants.userRoleKey);
       final email = await _storage.read(key: 'user_email');
       final fullName = await _storage.read(key: 'user_full_name');
-      final preferredLang = await _storage.read(key: AppConstants.languageKey);
+      final lang = await _storage.read(key: AppConstants.languageKey);
 
-      if (token != null && userId != null) {
+      // Only authenticate if ALL required fields are present
+      if (token != null &&
+          token.isNotEmpty &&
+          userId != null &&
+          userId.isNotEmpty &&
+          role != null &&
+          role.isNotEmpty) {
         state = AuthState.authenticated(
           accessToken: token,
           user: AuthUser(
             id: userId,
             email: email ?? '',
             fullName: fullName ?? '',
-            role: role ?? 'farmer',
+            role: role,
             state: 'Uttar Pradesh',
             isActive: true,
-            preferredLang: preferredLang ?? 'hi',
+            preferredLang: lang ?? 'hi',
           ),
         );
       } else {
+        // Clear any partial/corrupted storage
+        await _storage.deleteAll();
         state = const AuthState.unauthenticated();
       }
-    } catch (_) {
+    } catch (e) {
+      // Any error reading storage → unauthenticated (never stay unknown)
+      try {
+        await _storage.deleteAll();
+      } catch (_) {}
       state = const AuthState.unauthenticated();
     }
   }
 
   Future<void> setAuthenticated(AuthTokens tokens) async {
     await _storage.write(
-      key: AppConstants.accessTokenKey,
-      value: tokens.accessToken,
-    );
+        key: AppConstants.accessTokenKey, value: tokens.accessToken);
     await _storage.write(
-      key: AppConstants.refreshTokenKey,
-      value: tokens.refreshToken,
-    );
+        key: AppConstants.refreshTokenKey, value: tokens.refreshToken);
+    await _storage.write(key: AppConstants.userIdKey, value: tokens.user.id);
     await _storage.write(
-      key: AppConstants.userIdKey,
-      value: tokens.user.id,
-    );
-    await _storage.write(
-      key: AppConstants.userRoleKey,
-      value: tokens.user.role,
-    );
+        key: AppConstants.userRoleKey, value: tokens.user.role);
     await _storage.write(key: 'user_email', value: tokens.user.email);
     await _storage.write(key: 'user_full_name', value: tokens.user.fullName);
     await _storage.write(
-      key: AppConstants.languageKey,
-      value: tokens.user.preferredLang,
-    );
+        key: AppConstants.languageKey, value: tokens.user.preferredLang);
 
     state = AuthState.authenticated(
       accessToken: tokens.accessToken,
