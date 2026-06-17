@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:fasalsetu/l10n/app_localizations.dart';
 import 'package:fasalsetu/core/constants/app_colors.dart';
 import 'package:fasalsetu/core/constants/app_constants.dart';
+import 'package:fasalsetu/core/providers/auth_provider.dart';
 import 'package:fasalsetu/features/auth/presentation/providers/auth_feature_provider.dart';
 import 'package:fasalsetu/shared/widgets/app_button.dart';
 import 'dart:async';
@@ -93,10 +94,11 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       return;
     }
 
-    // Do NOT manually navigate here.
-    // authProvider state is now authenticated.
-    // GoRouter's redirect in appRouterProvider watches authProvider
-    // and will automatically redirect to /dashboard.
+    // Explicitly navigate once auth has been saved so the session cannot
+    // be lost due to a redirect race.
+    if (mounted && ref.read(authProvider).isAuthenticated) {
+      context.go('/dashboard');
+    }
   }
 
   Future<void> _resendOtp() async {

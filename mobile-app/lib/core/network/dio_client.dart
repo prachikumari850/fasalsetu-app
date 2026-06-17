@@ -20,18 +20,22 @@ Dio createDio(Ref ref) {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final token = await _storage.read(
-          key: AppConstants.accessTokenKey,
-        );
-        if (token != null) {
+        final authState = ref.read(authProvider);
+        final token = authState.accessToken ??
+            await _storage.read(key: AppConstants.accessTokenKey);
+
+        if (token != null && token.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $token';
         }
         handler.next(options);
       },
       onError: (error, handler) async {
         if (error.response?.statusCode == 401) {
-          // Token expired — sign out
-          ref.read(authProvider.notifier).signOut();
+          // Do not immediately clear the session for every 401.
+          // Some protected endpoints can temporarily return 401 while the
+          // user is still authenticated, and forcing logout causes the app
+          // to loop back to login.
+          // The request error is still surfaced to the caller.
         }
         handler.next(error);
       },

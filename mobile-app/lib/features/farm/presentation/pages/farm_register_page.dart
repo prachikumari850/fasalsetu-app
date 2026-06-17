@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,6 +57,24 @@ class _FarmRegisterPageState extends ConsumerState<FarmRegisterPage> {
 
   bool get _hasBoundary => _boundaryPoints.length >= 3;
 
+  String _getErrorMessage(Object error) {
+    if (error is DioException) {
+      final responseData = error.response?.data;
+      if (responseData is Map<String, dynamic>) {
+        final detail = responseData['detail'];
+        if (detail is String && detail.isNotEmpty) {
+          return detail;
+        }
+        final message = responseData['message'];
+        if (message is String && message.isNotEmpty) {
+          return message;
+        }
+      }
+      return error.message ?? 'Something went wrong';
+    }
+    return error.toString();
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_hasBoundary) {
@@ -101,25 +120,28 @@ class _FarmRegisterPageState extends ConsumerState<FarmRegisterPage> {
         await ref.read(createFarmProvider.notifier).createFarm(payload);
     final state = ref.read(createFarmProvider);
 
-    if (state.hasError && mounted) {
+    if (!mounted) return;
+
+    if (state.hasError || farm == null) {
+      final errorMessage = state.error != null
+          ? _getErrorMessage(state.error!)
+          : 'Unable to submit farm details';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(state.error.toString()),
+          content: Text(errorMessage),
           backgroundColor: AppColors.error,
         ),
       );
       return;
     }
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.farmRegistered),
-          backgroundColor: AppColors.success,
-        ),
-      );
-      context.pop();
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.farmRegistered),
+        backgroundColor: AppColors.success,
+      ),
+    );
+    context.pop();
   }
 
   @override
@@ -143,7 +165,7 @@ class _FarmRegisterPageState extends ConsumerState<FarmRegisterPage> {
           currentStep: _currentStep,
           type: StepperType.vertical,
           physics: const ClampingScrollPhysics(),
-          onStepContinue: () {
+          onStepContinue: () async {
             if (_currentStep == 0) {
               // Validate step 1 fields
               if (_nameCtrl.text.isEmpty ||
@@ -168,7 +190,7 @@ class _FarmRegisterPageState extends ConsumerState<FarmRegisterPage> {
               }
               setState(() => _currentStep = 2);
             } else {
-              _submit();
+              await _submit();
             }
           },
           onStepCancel: () {

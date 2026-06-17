@@ -55,27 +55,27 @@ class AuthNotifier extends Notifier<AuthState> {
       final fullName = await _storage.read(key: 'user_full_name');
       final lang = await _storage.read(key: AppConstants.languageKey);
 
-      // Only authenticate if ALL required fields are present
+      // Accept a stored session as long as we have a token and user id.
+      // Some older installs may not have every profile field persisted yet,
+      // but the token itself is still sufficient to keep the user signed in.
       if (token != null &&
           token.isNotEmpty &&
           userId != null &&
-          userId.isNotEmpty &&
-          role != null &&
-          role.isNotEmpty) {
+          userId.isNotEmpty) {
         state = AuthState.authenticated(
           accessToken: token,
           user: AuthUser(
             id: userId,
             email: email ?? '',
             fullName: fullName ?? '',
-            role: role,
+            role: role ?? 'farmer',
             state: 'Uttar Pradesh',
             isActive: true,
             preferredLang: lang ?? 'hi',
           ),
         );
       } else {
-        // Clear any partial/corrupted storage
+        // Clear any partial/corrupted storage only when the session is truly incomplete.
         await _storage.deleteAll();
         state = const AuthState.unauthenticated();
       }
