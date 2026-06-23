@@ -257,7 +257,7 @@ class _OtpBox extends StatelessWidget {
           counterText: '',
           filled: true,
           fillColor: focusNode.hasFocus
-              ? AppColors.primary.withOpacity(0.05)
+              ? AppColors.primary.withValues(alpha: 0.05)
               : AppColors.surface,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

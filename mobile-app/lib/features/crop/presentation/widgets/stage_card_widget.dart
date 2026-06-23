@@ -162,7 +162,7 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.camera_alt_rounded,
@@ -178,7 +178,7 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.info.withOpacity(0.1),
+                    color: AppColors.info.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.photo_library_rounded,
@@ -273,7 +273,7 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                   child: Container(
                     width: 2,
                     color:
-                        isCompleted ? color.withOpacity(0.4) : AppColors.border,
+                        isCompleted ? color.withValues(alpha: 0.4) : AppColors.border,
                   ),
                 ),
             ],
@@ -301,7 +301,7 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: color.withOpacity(0.1),
+                              color: color.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(_stageIcon(stage.stageName),
@@ -333,7 +333,7 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
-                                color: AppColors.success.withOpacity(0.1),
+                                color: AppColors.success.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: const Text(
@@ -429,7 +429,7 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                                     tooltip: l10n.stageCompleted,
                                     style: IconButton.styleFrom(
                                       backgroundColor:
-                                          AppColors.success.withOpacity(0.1),
+                                          AppColors.success.withValues(alpha: 0.1),
                                     ),
                                   ),
                                 ],
@@ -443,10 +443,10 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppColors.warning.withOpacity(0.1),
+                                color: AppColors.warning.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                    color: AppColors.warning.withOpacity(0.3)),
+                                    color: AppColors.warning.withValues(alpha: 0.3)),
                               ),
                               child: const Row(
                                 children: [

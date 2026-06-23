@@ -27,11 +27,9 @@ class AuthState {
         accessToken = null;
 
   AuthState.authenticated({
-    required AuthUser user,
-    required String accessToken,
-  })  : status = AuthStatus.authenticated,
-        user = user,
-        accessToken = accessToken;
+    required AuthUser this.user,
+    required String this.accessToken,
+  })  : status = AuthStatus.authenticated;
 
   bool get isAuthenticated => status == AuthStatus.authenticated;
 }
