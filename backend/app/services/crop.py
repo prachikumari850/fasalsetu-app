@@ -92,85 +92,74 @@ class CropService:
         latitude: float,
         longitude: float,
         captured_at: datetime | None = None,
-    ) -> CropImage:
-        # 1. Verify farm access
-        await self._verify_farm_access(farm_id, user_id)
+        image_bytes_override: bytes | None = None,
+) -> CropImage:
+     await self._verify_farm_access(farm_id, user_id)
 
-        # 2. Get or create the stage
-        stage = await self.stage_repo.upsert_stage(
-            farm_id=farm_id,
-            stage_name=stage_name,
-            data={},
-        )
+     stage = await self.stage_repo.upsert_stage(
+        farm_id=farm_id,
+        stage_name=stage_name,
+        data={},
+    )
 
-        # 3. Read + validate image
-        image_bytes = await read_image_bytes(file)
-        error = validate_image(image_bytes)
-        if error:
-            raise ValidationException(error)
+    # Use pre-read bytes if provided, otherwise read from file
+     image_bytes = image_bytes_override or await read_image_bytes(file)
 
-        # 4. Compute pHash for fraud detection
-        image_hash = compute_phash(image_bytes)
+     error = validate_image(image_bytes)
+     if error:
+         raise ValidationException(error)
 
-        # 5. GPS fence check
-        farm = await self.farm_repo.get_with_boundary(farm_id)
-        is_inside = False
-        if farm.boundary and farm.boundary.coordinates:
-            coords = farm.boundary.coordinates
-            if isinstance(coords, list) and len(coords) >= 3:
-                is_inside = is_point_inside_boundary(
-                    latitude, longitude, coords
-                )
+     image_hash = compute_phash(image_bytes)
 
-        logger.info(
-            "GPS fence check",
-            inside=is_inside,
-            lat=latitude,
-            lng=longitude,
-        )
+     farm = await self.farm_repo.get_with_boundary(farm_id)
 
-        # 6. Upload to Supabase Storage
-        filename = file.filename or f"crop_{uuid.uuid4().hex}.jpg"
-        storage_path, storage_url = upload_image_to_storage(
-            bucket="crop-images",
-            user_id=str(user_id),
-            image_bytes=image_bytes,
-            original_filename=filename,
-        )
-
-        # 7. Save to database
-        crop_image = CropImage(
-            farm_id=farm_id,
-            stage_id=stage.id,
-            uploaded_by=user_id,
-            storage_path=storage_path,
-            storage_url=storage_url,
-            latitude=latitude,
-            longitude=longitude,
-            image_hash=image_hash,
-            is_inside_fence=is_inside,
-            ai_processed=False,
-            captured_at=captured_at or datetime.now(timezone.utc),
-        )
-        self.db.add(crop_image)
-        await self.db.flush()
-        await self.db.refresh(crop_image)
-
-        # 8. Mark stage as having activity
-        if not stage.is_completed:
-            stage.actual_date = (
-                captured_at.date() if captured_at
-                else datetime.now(timezone.utc).date()
+     is_inside = False
+     if farm.boundary and farm.boundary.coordinates:
+         coords = farm.boundary.coordinates
+         if isinstance(coords, list) and len(coords) >= 3:
+             is_inside = is_point_inside_boundary(
+                latitude,
+                longitude,
+                coords,
             )
-            await self.db.flush()
 
-        logger.info(
-            "Crop image saved",
-            image_id=str(crop_image.id),
-            farm_id=str(farm_id),
-            stage=stage_name.value,
+     filename = file.filename or f"crop_{uuid.uuid4().hex}.jpg"
+
+     storage_path, storage_url = upload_image_to_storage(
+         bucket="crop-images",
+         user_id=str(user_id),
+         image_bytes=image_bytes,
+         original_filename=filename,
+    )
+
+     crop_image = CropImage(
+        farm_id=farm_id,
+        stage_id=stage.id,
+        uploaded_by=user_id,
+        storage_path=storage_path,
+        storage_url=storage_url,
+        latitude=latitude,
+        longitude=longitude,
+        image_hash=image_hash,
+        is_inside_fence=is_inside,
+        ai_processed=False,
+        captured_at=captured_at or datetime.now(timezone.utc),
+    )
+
+     self.db.add(crop_image)
+
+     await self.db.flush()
+     await self.db.refresh(crop_image)
+
+     if not stage.is_completed:
+        stage.actual_date = (
+            captured_at.date()
+            if captured_at
+            else datetime.now(timezone.utc).date()
         )
-        return crop_image
+        await self.db.flush()
+
+     return crop_image
 
     async def get_timeline(
         self,
@@ -259,3 +248,4 @@ class CropService:
     ) -> list[CropImage]:
         await self._verify_farm_access(farm_id, user_id)
         return await self.image_repo.get_by_farm(farm_id)
+    

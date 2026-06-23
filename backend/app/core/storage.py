@@ -38,3 +38,23 @@ def upload_image_to_storage(
     except Exception as e:
         logger.error("Storage upload failed", error=str(e), path=file_path)
         raise RuntimeError(f"Failed to upload image: {str(e)}")
+    
+    
+def get_image_bytes_from_storage(storage_path: str) -> bytes:
+    """
+    Download image bytes from Supabase Storage for AI inference.
+    """
+    supabase = get_supabase_admin()
+
+    # Determine bucket from path
+    bucket = "crop-images"
+    if "claim" in storage_path:
+        bucket = "claim-images"
+
+    try:
+        response = supabase.storage.from_(bucket).download(storage_path)
+        return response
+    except Exception as e:
+        logger.error("Failed to download image from storage",
+                     path=storage_path, error=str(e))
+        raise RuntimeError(f"Could not retrieve image: {str(e)}")

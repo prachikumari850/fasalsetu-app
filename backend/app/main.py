@@ -89,9 +89,15 @@ import re
 async def lifespan(app: FastAPI):
     setup_logging()
     logger.info("FasalSetu API starting", env=settings.app_env)
+
+    # Load AI models at startup (once, not per request)
+    from app.ai.disease_detector import DiseaseDetector
+    from app.ai.health_classifier import HealthClassifier
+    DiseaseDetector.get()    # Loads YOLOv8 ONNX into memory
+    HealthClassifier.get()   # Loads EfficientNet ONNX into memory
+
     yield
     logger.info("FasalSetu API shutting down")
-
 
 app = FastAPI(
     title=settings.app_name,

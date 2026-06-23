@@ -115,3 +115,133 @@ async def get_farm_images(
     return SuccessResponse(
         data=[CropImageResponse.model_validate(i) for i in images]
     )
+
+@router.get(
+    "/{farm_id}/analysis/{image_id}",
+    response_model=SuccessResponse[dict],
+    summary="Get AI analysis results for a specific image",
+)
+async def get_image_analysis(
+    farm_id: uuid.UUID,
+    image_id: uuid.UUID,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+) -> SuccessResponse[dict]:
+    from sqlalchemy import select
+    from app.models.crop import CropImage, DiseaseReport
+
+    # Verify farm access
+    await CropService(db)._verify_farm_access(farm_id, uuid.UUID(user_id))
+
+    # Get image
+    result = await db.execute(
+        select(CropImage).where(
+            CropImage.id == image_id,
+            CropImage.farm_id == farm_id,
+        )
+    )
+    image = result.scalar_one_or_none()
+    if image is None:
+        from app.core.exceptions import NotFoundException
+        raise NotFoundException("CropImage")
+
+    # Get disease reports for this image
+    reports_result = await db.execute(
+        select(DiseaseReport)
+        .where(DiseaseReport.image_id == image_id)
+        .order_by(DiseaseReport.detected_at.desc())
+    )
+    reports = reports_result.scalars().all()
+
+    return SuccessResponse(data={
+        "image_id":     str(image_id),
+        "ai_processed": image.ai_processed,
+        "is_inside_fence": image.is_inside_fence,
+        "reports": [
+            {
+                "id":           str(r.id),
+                "disease_name": r.disease_name,
+                "confidence":   float(r.confidence),
+                "severity":     r.severity.value,
+                "bbox_data":    r.bbox_data,
+                "raw_output":   r.raw_output,
+                "detected_at":  r.detected_at.isoformat(),
+            }
+            for r in reports
+        ],
+    })
+
+
+@router.get(
+    "/{farm_id}/health",
+    response_model=SuccessResponse[dict],
+    summary="Get overall crop health score for a farm",
+)
+async def get_farm_health(
+    farm_id: uuid.UUID,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+) -> SuccessResponse[dict]:
+    from sqlalchemy import select, func
+    from app.models.crop import CropImage, DiseaseReport
+
+    await CropService(db)._verify_farm_access(farm_id, uuid.UUID(user_id))
+
+    # Get all processed images for the farm
+    result = await db.execute(
+        select(CropImage)
+        .where(
+            CropImage.farm_id == farm_id,
+            CropImage.ai_processed == True,
+        )
+        .order_by(CropImage.captured_at.desc())
+        .limit(20)
+    )
+    images = result.scalars().all()
+
+    if not images:
+        return SuccessResponse(data={
+            "farm_id":     str(farm_id),
+            "health_score": None,
+            "health_class": None,
+            "message":     "No analyzed images yet. Upload crop photos to get health score.",
+            "total_images": 0,
+        })
+
+    # Aggregate health from raw_output of latest disease reports
+    image_ids  = [img.id for img in images]
+    rpt_result = await db.execute(
+        select(DiseaseReport)
+        .where(DiseaseReport.image_id.in_(image_ids))
+        .order_by(DiseaseReport.detected_at.desc())
+    )
+    reports = rpt_result.scalars().all()
+
+    scores = []
+    for r in reports:
+        if r.raw_output and "health" in r.raw_output:
+            scores.append(r.raw_output["health"]["health_score"])
+
+    avg_score = int(sum(scores) / len(scores)) if scores else None
+
+    health_class = "unknown"
+    if avg_score is not None:
+        if avg_score >= 85:   health_class = "healthy"
+        elif avg_score >= 60: health_class = "mild_stress"
+        elif avg_score >= 35: health_class = "moderate_stress"
+        else:                 health_class = "severe_stress"
+
+    # Disease distribution
+    disease_counts: dict[str, int] = {}
+    for r in reports:
+        disease_counts[r.disease_name] = disease_counts.get(r.disease_name, 0) + 1
+
+    return SuccessResponse(data={
+        "farm_id":          str(farm_id),
+        "health_score":     avg_score,
+        "health_class":     health_class,
+        "total_images":     len(images),
+        "analyzed_images":  len(reports),
+        "disease_summary":  disease_counts,
+        "last_analyzed":    images[0].captured_at.isoformat() if images else None,
+    })
