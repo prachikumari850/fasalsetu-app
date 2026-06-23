@@ -1,0 +1,40 @@
+{
+  "model_name": "FasalSetu Health Classifier v1",
+  "model_version": "efficientnet_b2-v1",
+  "num_classes": 4,
+  "class_names": [
+    "healthy",
+    "mild_stress",
+    "moderate_stress",
+    "severe_stress"
+  ],
+  "input_size": 224,
+  "normalize_mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "normalize_std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "health_score_map": {
+    "healthy": {
+      "min": 85,
+      "max": 100
+    },
+    "mild_stress": {
+      "min": 60,
+      "max": 84
+    },
+    "moderate_stress": {
+      "min": 35,
+      "max": 59
+    },
+    "severe_stress": {
+      "min": 0,
+      "max": 34
+    }
+  }
+}

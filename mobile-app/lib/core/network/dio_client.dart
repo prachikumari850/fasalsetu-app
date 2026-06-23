@@ -1,41 +1,39 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fasalsetu/core/constants/app_constants.dart';
 import 'package:fasalsetu/core/providers/auth_provider.dart';
-
-const _storage = FlutterSecureStorage();
 
 Dio createDio(Ref ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: AppConstants.apiBaseUrl,
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 30),
+      // Increased from 15s to 60s.
+      // Root cause of timeout: backend makes N SSL connections (one per farm)
+      // Fix is in farms.py (batch fetch), but 60s is a safety net for slow
+      // networks and any other endpoints that may still be slower.
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
+      sendTimeout:    const Duration(seconds: 60),
       headers: {'Content-Type': 'application/json'},
     ),
   );
 
-  // Auth interceptor
   dio.interceptors.add(
     InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final authState = ref.read(authProvider);
-        final token = authState.accessToken ??
-            await _storage.read(key: AppConstants.accessTokenKey);
-
+      onRequest: (options, handler) {
+        // Read token directly from Riverpod in-memory state.
+        // Do NOT use FlutterSecureStorage here — localStorage on Flutter Web
+        // is unreliable and can return null even when the user is authenticated.
+        final token = ref.read(authProvider).accessToken;
         if (token != null && token.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $token';
         }
         handler.next(options);
       },
-      onError: (error, handler) async {
+      onError: (error, handler) {
         if (error.response?.statusCode == 401) {
-          // Do not immediately clear the session for every 401.
-          // Some protected endpoints can temporarily return 401 while the
-          // user is still authenticated, and forcing logout causes the app
-          // to loop back to login.
-          // The request error is still surfaced to the caller.
+          // Token expired or invalid — sign out
+          ref.read(authProvider.notifier).signOut();
         }
         handler.next(error);
       },

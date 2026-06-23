@@ -354,10 +354,10 @@ class _FarmRegisterPageState extends ConsumerState<FarmRegisterPage> {
                           horizontal: 12, vertical: 8),
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
-                        color: AppColors.success.withOpacity(0.1),
+                        color: AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                            color: AppColors.success.withOpacity(0.3)),
+                            color: AppColors.success.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
@@ -376,11 +376,19 @@ class _FarmRegisterPageState extends ConsumerState<FarmRegisterPage> {
                       ),
                     ),
                   BoundaryMapWidget(
-                    points: _boundaryPoints,
-                    onPointsChanged: (points, center) {
+                    initialPoints: _boundaryPoints,
+                    onBoundaryChanged: (points) {
                       setState(() {
                         _boundaryPoints = points;
-                        _centerPoint = center;
+
+                        if (points.isNotEmpty) {
+                          _centerPoint = LatLng(
+                            points.map((p) => p.latitude).reduce((a, b) => a + b) /
+                                points.length,
+                            points.map((p) => p.longitude).reduce((a, b) => a + b) /
+                                points.length,
+                          );
+                        }
                       });
                     },
                   ),

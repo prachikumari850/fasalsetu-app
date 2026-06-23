@@ -1,0 +1,17 @@
+names:
+- healthy
+- leaf_blast
+- brown_spot
+- bacterial_blight
+- yellow_rust
+- powdery_mildew
+- leaf_curl
+- early_blight
+- late_blight
+- aphid_infestation
+- whitefly
+nc: 11
+path: /content/data/yolov8_dataset
+test: images/test
+train: images/train
+val: images/val

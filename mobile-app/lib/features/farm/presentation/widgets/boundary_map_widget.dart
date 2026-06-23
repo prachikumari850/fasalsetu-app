@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:fasalsetu/core/constants/app_colors.dart';
-import 'package:fasalsetu/core/constants/app_constants.dart';
 
 class BoundaryMapWidget extends StatefulWidget {
-  final List<LatLng> points;
-  final void Function(List<LatLng> points, LatLng center) onPointsChanged;
+  final List<LatLng> initialPoints;
+  final void Function(List<LatLng> points) onBoundaryChanged;
 
   const BoundaryMapWidget({
     super.key,
-    required this.points,
-    required this.onPointsChanged,
+    this.initialPoints = const [],
+    required this.onBoundaryChanged,
   });
 
   @override
@@ -21,16 +20,16 @@ class BoundaryMapWidget extends StatefulWidget {
 
 class _BoundaryMapWidgetState extends State<BoundaryMapWidget> {
   final MapController _mapController = MapController();
-  LatLng _center = const LatLng(
-    AppConstants.indiaLat,
-    AppConstants.indiaLng,
-  );
-  bool _locating = false;
+  List<LatLng> _points = [];
+  bool _isLocating = false;
+
+  // Default center: Uttar Pradesh, India
+  static const LatLng _defaultCenter = LatLng(26.8467, 80.9462);
 
   @override
   void initState() {
     super.initState();
-    _getUserLocation();
+    _points = List.from(widget.initialPoints);
   }
 
   @override
@@ -39,231 +38,282 @@ class _BoundaryMapWidgetState extends State<BoundaryMapWidget> {
     super.dispose();
   }
 
-  Future<void> _getUserLocation() async {
-    setState(() => _locating = true);
+  Future<void> _locateMe() async {
+    if (!mounted) return;
+    setState(() => _isLocating = true);
+
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
+      if (!serviceEnabled) {
+        if (mounted) {
+          _showError('Location services are disabled.');
+          setState(() => _isLocating = false);
+        }
+        return;
+      }
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            _showError('Location permission denied.');
+            setState(() => _isLocating = false);
+          }
+          return;
+        }
       }
-      if (permission == LocationPermission.deniedForever) return;
+
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          _showError('Location permission permanently denied.');
+          setState(() => _isLocating = false);
+        }
+        return;
+      }
 
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 15),
       );
-      final userLocation = LatLng(position.latitude, position.longitude);
-      setState(() => _center = userLocation);
-      _mapController.move(userLocation, AppConstants.defaultMapZoom);
-    } finally {
-      if (mounted) setState(() => _locating = false);
+
+      // CRITICAL: always check mounted after any async gap
+      if (!mounted) return;
+
+      final target = LatLng(position.latitude, position.longitude);
+      _mapController.move(target, 16.0);
+
+      setState(() => _isLocating = false);
+    } catch (e) {
+      // CRITICAL: check mounted in catch block too
+      if (!mounted) return;
+      _showError('Could not get location. Please tap the map manually.');
+      setState(() => _isLocating = false);
     }
   }
 
-  void _addPoint(LatLng point) {
-    final newPoints = [...widget.points, point];
-    final center = LatLng(
-      newPoints.map((p) => p.latitude).reduce((a, b) => a + b) /
-          newPoints.length,
-      newPoints.map((p) => p.longitude).reduce((a, b) => a + b) /
-          newPoints.length,
+  void _onTap(TapPosition _, LatLng point) {
+    if (!mounted) return;
+    setState(() {
+      _points.add(point);
+    });
+    widget.onBoundaryChanged(_points);
+  }
+
+  void _undoLast() {
+    if (!mounted || _points.isEmpty) return;
+    setState(() => _points.removeLast());
+    widget.onBoundaryChanged(_points);
+  }
+
+  void _clearAll() {
+    if (!mounted) return;
+    setState(() => _points.clear());
+    widget.onBoundaryChanged(_points);
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: AppColors.error),
     );
-    widget.onPointsChanged(newPoints, center);
-  }
-
-  void _removeLastPoint() {
-    if (widget.points.isEmpty) return;
-    final newPoints = widget.points.sublist(0, widget.points.length - 1);
-    final center = newPoints.isEmpty
-        ? _center
-        : LatLng(
-            newPoints.map((p) => p.latitude).reduce((a, b) => a + b) /
-                newPoints.length,
-            newPoints.map((p) => p.longitude).reduce((a, b) => a + b) /
-                newPoints.length,
-          );
-    widget.onPointsChanged(newPoints, center);
-  }
-
-  void _clearPoints() {
-    widget.onPointsChanged([], _center);
-  }
-
-  List<LatLng> get _polygonPoints {
-    if (widget.points.length < 3) return [];
-    return [...widget.points, widget.points.first];
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool hasBoundary = _points.length >= 3;
+
     return Column(
       children: [
+        // Toolbar
+        Row(
+          children: [
+            _ToolButton(
+              icon: Icons.my_location,
+              label: 'Locate',
+              isLoading: _isLocating,
+              onTap: _locateMe,
+            ),
+            const SizedBox(width: 8),
+            _ToolButton(
+              icon: Icons.undo,
+              label: 'Undo',
+              onTap: _points.isNotEmpty ? _undoLast : null,
+            ),
+            const SizedBox(width: 8),
+            _ToolButton(
+              icon: Icons.clear,
+              label: 'Clear',
+              onTap: _points.isNotEmpty ? _clearAll : null,
+              color: AppColors.error,
+            ),
+            const Spacer(),
+            if (hasBoundary)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.success),
+                ),
+                child: Text(
+                  '${_points.length} points',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.success,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+
         // Map
         ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           child: SizedBox(
-            height: 320,
-            child: Stack(
+            height: 300,
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: _defaultCenter,
+                initialZoom: 13.0,
+                onTap: _onTap,
+              ),
               children: [
-                FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
-                    initialCenter: _center,
-                    initialZoom: AppConstants.defaultMapZoom,
-                    onTap: (_, point) => _addPoint(point),
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.fasalsetu.fasalsetu',
-                    ),
-
-                    // Polygon fill
-                    if (_polygonPoints.length >= 3)
-                      PolygonLayer(
-                        polygons: [
-                          Polygon(
-                            points: _polygonPoints,
-                            color: AppColors.primary.withOpacity(0.2),
-                            borderColor: AppColors.primary,
-                            borderStrokeWidth: 2.5,
-                          ),
-                        ],
+                TileLayer(
+                  urlTemplate:
+                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.fasalsetu.app',
+                ),
+                if (_points.length >= 3)
+                  PolygonLayer(
+                    polygons: [
+                      Polygon(
+                        points: _points,
+                        color: AppColors.primary.withValues(alpha: 0.25),
+                        borderColor: AppColors.primary,
+                        borderStrokeWidth: 2.5,
                       ),
-
-                    // Boundary markers
-                    MarkerLayer(
-                      markers: widget.points.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final point = entry.value;
-                        return Marker(
-                          point: point,
-                          width: 28,
-                          height: 28,
+                    ],
+                  ),
+                PolylineLayer(
+                  polylines: [
+                    if (_points.length >= 2)
+                      Polyline(
+                        points: _points,
+                        color: AppColors.primary,
+                        strokeWidth: 2.0,
+                      ),
+                  ],
+                ),
+                MarkerLayer(
+                  markers: _points
+                      .asMap()
+                      .entries
+                      .map(
+                        (e) => Marker(
+                          point: e.value,
+                          width: 20,
+                          height: 20,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: index == 0
-                                  ? AppColors.secondary
+                              color: e.key == 0
+                                  ? AppColors.success
                                   : AppColors.primary,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
+                                  color: Colors.white, width: 2),
                             ),
-                            child: Center(
-                              child: Text(
-                                '${index + 1}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-
-                // Loading indicator
-                if (_locating)
-                  const Positioned(
-                    top: 12,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Card(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Text('Finding location...',
-                                  style: TextStyle(fontSize: 12)),
-                            ],
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-
-                // My location button
-                Positioned(
-                  right: 12,
-                  bottom: 12,
-                  child: FloatingActionButton.small(
-                    heroTag: 'location_btn',
-                    onPressed: _getUserLocation,
-                    backgroundColor: Colors.white,
-                    child: const Icon(
-                      Icons.my_location_rounded,
-                      color: AppColors.primary,
-                    ),
-                  ),
+                      )
+                      .toList(),
                 ),
               ],
             ),
           ),
         ),
 
-        const SizedBox(height: 12),
-
-        // Action buttons
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: widget.points.isEmpty ? null : _removeLastPoint,
-                icon: const Icon(Icons.undo_rounded, size: 16),
-                label: const Text('Undo'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.warning,
-                  side: BorderSide(
-                    color: widget.points.isEmpty
-                        ? AppColors.border
-                        : AppColors.warning,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: widget.points.isEmpty ? null : _clearPoints,
-                icon: const Icon(Icons.clear_rounded, size: 16),
-                label: const Text('Clear All'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.error,
-                  side: BorderSide(
-                    color: widget.points.isEmpty
-                        ? AppColors.border
-                        : AppColors.error,
-                  ),
-                ),
-              ),
-            ),
-          ],
+        const SizedBox(height: 8),
+        Text(
+          hasBoundary
+              ? 'Boundary ready. Tap to add more points.'
+              : 'Tap the map to mark farm corners (min. 3 points)',
+          style: TextStyle(
+            fontSize: 12,
+            color: hasBoundary
+                ? AppColors.success
+                : AppColors.textSecondary,
+          ),
+          textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+}
+
+class _ToolButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+  final bool isLoading;
+  final Color? color;
+
+  const _ToolButton({
+    required this.icon,
+    required this.label,
+    this.onTap,
+    this.isLoading = false,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final effective = color ?? AppColors.primary;
+    final enabled   = onTap != null && !isLoading;
+
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 150),
+        opacity: enabled ? 1.0 : 0.4,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: effective.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: effective.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isLoading)
+                SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: effective,
+                  ),
+                )
+              else
+                Icon(icon, size: 14, color: effective),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: effective,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

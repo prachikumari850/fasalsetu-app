@@ -195,7 +195,7 @@ class DashboardPage extends ConsumerWidget {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary.withOpacity(0.1),
+                                    color: AppColors.primary.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: const Icon(
@@ -250,7 +250,7 @@ class _StatBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -311,7 +311,7 @@ class _QuickActionCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color, size: 24),

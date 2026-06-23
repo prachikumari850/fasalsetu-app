@@ -1,0 +1,21 @@
+{
+  "model_name": "FasalSetu Disease Detector v1",
+  "model_version": "yolov8n-v1",
+  "num_classes": 11,
+  "class_names": [
+    "healthy",
+    "leaf_blast",
+    "brown_spot",
+    "bacterial_blight",
+    "yellow_rust",
+    "powdery_mildew",
+    "leaf_curl",
+    "early_blight",
+    "late_blight",
+    "aphid_infestation",
+    "whitefly"
+  ],
+  "confidence_threshold": 0.4,
+  "iou_threshold": 0.45,
+  "input_size": 640
+}
