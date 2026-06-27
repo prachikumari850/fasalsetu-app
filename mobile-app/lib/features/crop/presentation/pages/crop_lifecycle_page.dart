@@ -6,6 +6,8 @@ import 'package:fasalsetu/core/constants/app_colors.dart';
 import 'package:fasalsetu/features/crop/domain/entities/crop_entities.dart';
 import 'package:fasalsetu/features/crop/presentation/providers/crop_provider.dart';
 import 'package:fasalsetu/features/crop/presentation/widgets/stage_card_widget.dart';
+import 'package:fasalsetu/features/trust/presentation/providers/trust_provider.dart';
+import 'package:fasalsetu/features/trust/presentation/widgets/trust_score_widget.dart';
 import 'package:fasalsetu/shared/widgets/loading_widget.dart';
 import 'package:fasalsetu/shared/widgets/error_widget.dart';
 
@@ -47,6 +49,13 @@ class CropLifecyclePage extends ConsumerWidget {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.health_and_safety_outlined),
+            tooltip: 'Crop Health',
+            onPressed: () => context.push(
+              '/farms/$farmId/health?name=${Uri.encodeComponent(farmName)}',
+            ),
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () =>
                 ref.read(cropTimelineProvider(farmId).notifier).refresh(farmId),
@@ -86,6 +95,7 @@ class _TimelineBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final trustAsync = ref.watch(trustScoreProvider(farmId));
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -161,6 +171,24 @@ class _TimelineBody extends ConsumerWidget {
                   ],
                 ),
               ],
+            ),
+          ),
+
+          // Trust score card
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: trustAsync.when(
+              loading: () => const SizedBox(
+                height: 88,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primary,
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+              error: (_, __) => const SizedBox.shrink(),
+              data: (trust) => TrustScoreCard(trust: trust),
             ),
           ),
 

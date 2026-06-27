@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,7 +14,7 @@ class StageCardWidget extends ConsumerStatefulWidget {
   final TimelineStageEntity timelineStage;
   final String farmId;
   final int stageIndex;
-  final bool showConnector;
+  final bool showConnector; 
 
   const StageCardWidget({
     super.key,
@@ -487,46 +488,70 @@ class _ImageThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: CachedNetworkImage(
-            imageUrl: image.storageUrl,
-            width: 80,
-            height: 80,
-            fit: BoxFit.cover,
-            placeholder: (_, __) => Container(
-              color: AppColors.surfaceVariant,
-              child:
-                  const Icon(Icons.image_outlined, color: AppColors.textHint),
-            ),
-            errorWidget: (_, __, ___) => Container(
-              color: AppColors.surfaceVariant,
-              child: const Icon(Icons.broken_image_outlined,
-                  color: AppColors.textHint),
+    return GestureDetector(
+      onTap: () => context.push(
+        '/farms/${image.farmId}/analysis/${image.id}'
+        '?imageUrl=${Uri.encodeComponent(image.storageUrl)}',
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: CachedNetworkImage(
+              imageUrl: image.storageUrl,
+              width: 80,
+              height: 80,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Container(
+                color: AppColors.surfaceVariant,
+                child: const Icon(Icons.image_outlined,
+                    color: AppColors.textHint),
+              ),
+              errorWidget: (_, __, ___) => Container(
+                color: AppColors.surfaceVariant,
+                child: const Icon(Icons.broken_image_outlined,
+                    color: AppColors.textHint),
+              ),
             ),
           ),
-        ),
-        if (!image.isInsideFence)
           Positioned(
-            top: 4,
-            right: 4,
+            bottom: 4,
+            left: 4,
             child: Container(
-              width: 16,
-              height: 16,
-              decoration: const BoxDecoration(
-                color: AppColors.warning,
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.warning_rounded,
+              child: Icon(
+                image.aiProcessed
+                    ? Icons.check_circle_rounded
+                    : Icons.hourglass_bottom_rounded,
                 size: 10,
-                color: Colors.white,
+                color: image.aiProcessed ? AppColors.success : Colors.white,
               ),
             ),
           ),
-      ],
+          if (!image.isInsideFence)
+            Positioned(
+              top: 4,
+              right: 4,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: const BoxDecoration(
+                  color: AppColors.warning,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.warning_rounded,
+                  size: 10,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
