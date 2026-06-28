@@ -100,6 +100,65 @@ def _fetch_crop_images_rest(stage_id: str) -> list[dict]:
         logger.error("Crop images REST fetch failed", error=str(e), stage_id=stage_id)
         return []
 
+def _fetch_crop_image_rest(image_id: str, farm_id: str) -> dict | None:
+    url = f"{_get_supabase_url()}/rest/v1/crop_images"
+    params = {"id": f"eq.{image_id}", "farm_id": f"eq.{farm_id}", "limit": "1"}
+    try:
+        resp = httpx.get(url, headers=_supabase_headers(), params=params, timeout=10.0)
+        resp.raise_for_status()
+        rows = resp.json()
+        return rows[0] if rows else None
+    except Exception as e:
+        logger.error("Crop image REST fetch failed", error=str(e), image_id=image_id)
+        return None
+
+
+def _fetch_disease_reports_rest(image_id: str) -> list[dict]:
+    url = f"{_get_supabase_url()}/rest/v1/disease_reports"
+    params = {"image_id": f"eq.{image_id}", "order": "detected_at.desc"}
+    try:
+        resp = httpx.get(url, headers=_supabase_headers(), params=params, timeout=10.0)
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as e:
+        logger.error("Disease reports REST fetch failed", error=str(e), image_id=image_id)
+        return []
+
+
+def _fetch_processed_images_rest(farm_id: str, limit: int = 20) -> list[dict]:
+    url = f"{_get_supabase_url()}/rest/v1/crop_images"
+    params = {
+        "farm_id": f"eq.{farm_id}",
+        "ai_processed": "eq.true",
+        "order": "captured_at.desc",
+        "limit": str(limit),
+    }
+    try:
+        resp = httpx.get(url, headers=_supabase_headers(), params=params, timeout=10.0)
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as e:
+        logger.error("Processed images REST fetch failed", error=str(e), farm_id=farm_id)
+        return []
+
+
+def _fetch_disease_reports_for_images_rest(image_ids: list[str]) -> list[dict]:
+    if not image_ids:
+        return []
+    url = f"{_get_supabase_url()}/rest/v1/disease_reports"
+    ids_filter = ",".join(image_ids)
+    params = {
+        "image_id": f"in.({ids_filter})",
+        "order": "detected_at.desc",
+    }
+    try:
+        resp = httpx.get(url, headers=_supabase_headers(), params=params, timeout=10.0)
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as e:
+        logger.error("Disease reports (batch) REST fetch failed", error=str(e))
+        return []
+
 
 class CropService:
     def __init__(self, db: AsyncSession):

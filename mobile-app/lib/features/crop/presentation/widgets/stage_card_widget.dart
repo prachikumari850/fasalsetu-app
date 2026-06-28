@@ -132,6 +132,17 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
           ),
         );
       }
+    } catch (e) {
+      // Surface the REAL error instead of a silent generic failure.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Upload failed: $e'),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 6),
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _uploading = false);
     }
