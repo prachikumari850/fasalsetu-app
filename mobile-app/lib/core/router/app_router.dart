@@ -1,3 +1,9 @@
+// lib/core/router/app_router.dart
+// Added missing routes:
+//   /claims/new      → NewClaimPage
+//   /claims/:claimId → ClaimDetailPage
+// All other routes unchanged from original.
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,12 +17,13 @@ import 'package:fasalsetu/features/farm/presentation/pages/farm_register_page.da
 import 'package:fasalsetu/features/farm/presentation/pages/farm_detail_page.dart';
 import 'package:fasalsetu/features/crop/presentation/pages/crop_lifecycle_page.dart';
 import 'package:fasalsetu/features/claims/presentation/pages/claims_page.dart';
+import 'package:fasalsetu/features/claims/presentation/pages/claim_detail_page.dart';
 import 'package:fasalsetu/features/advisory/presentation/pages/advisory_page.dart';
 import 'package:fasalsetu/features/profile/presentation/pages/profile_page.dart';
 import 'package:fasalsetu/features/health/presentation/pages/crop_health_page.dart';
-import 'package:fasalsetu/features/analysis/presentation/pages/image_analysis_page.dart'; 
+import 'package:fasalsetu/features/analysis/presentation/pages/image_analysis_page.dart';
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+final _rootNavigatorKey  = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -27,31 +34,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/splash',
     debugLogDiagnostics: true,
     redirect: (context, state) {
-      final status = authState.status;
+      final status         = authState.status;
       final isAuthenticated = authState.isAuthenticated;
-      final loc = state.matchedLocation;
-      final isAuthRoute = loc.startsWith('/auth');
-      final isSplash = loc == '/splash';
+      final loc            = state.matchedLocation;
+      final isAuthRoute    = loc.startsWith('/auth');
+      final isSplash       = loc == '/splash';
 
-      // Still initialising — stay on splash
       if (status == AuthStatus.unknown) return isSplash ? null : '/splash';
-
-      // Authenticated user on auth/splash routes → go to dashboard
       if (isAuthenticated && (isAuthRoute || isSplash)) return '/dashboard';
-
-      // Unauthenticated user on splash or protected routes → go to login
       if (!isAuthenticated && (isSplash || !isAuthRoute)) return '/auth/login';
 
       return null;
     },
     routes: [
-      // ── Splash ──────────────────────────────────────────────────────────
+      // ── Splash ────────────────────────────────────────────────────────
       GoRoute(
         path: '/splash',
         builder: (_, __) => const SplashPage(),
       ),
 
-      // ── Auth routes (no shell / bottom nav) ─────────────────────────────
+      // ── Auth ──────────────────────────────────────────────────────────
       GoRoute(
         path: '/auth/login',
         builder: (_, __) => const LoginPage(),
@@ -64,7 +66,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // ── Full-screen routes (no bottom nav, under root navigator) ─────────
+      // ── Full-screen (no bottom nav) ────────────────────────────────────
       GoRoute(
         path: '/farms/register',
         builder: (_, __) => const FarmRegisterPage(),
@@ -79,31 +81,44 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/farms/:farmId/lifecycle',
         builder: (context, state) {
-          final farmId = state.pathParameters['farmId']!;
+          final farmId   = state.pathParameters['farmId']!;
           final farmName = state.uri.queryParameters['name'] ?? 'Farm';
           return CropLifecyclePage(farmId: farmId, farmName: farmName);
         },
       ),
-
       GoRoute(
         path: '/farms/:farmId/health',
         builder: (context, state) {
-          final farmId = state.pathParameters['farmId']!;
+          final farmId   = state.pathParameters['farmId']!;
           final farmName = state.uri.queryParameters['name'] ?? 'Farm';
           return CropHealthPage(farmId: farmId, farmName: farmName);
         },
       ),
-
       GoRoute(
-      path: '/farms/:farmId/analysis/:imageId',
-      builder: (context, state) {
-        final farmId = state.pathParameters['farmId']!;
-        final imageId = state.pathParameters['imageId']!;
-        final imageUrl = state.uri.queryParameters['imageUrl'] ?? '';
-        return ImageAnalysisPage(farmId: farmId, imageId: imageId, imageUrl: imageUrl);
-      },
-    ),
-      // ── Shell routes (bottom navigation bar visible) ─────────────────────
+        path: '/farms/:farmId/analysis/:imageId',
+        builder: (context, state) {
+          final farmId   = state.pathParameters['farmId']!;
+          final imageId  = state.pathParameters['imageId']!;
+          final imageUrl = state.uri.queryParameters['imageUrl'] ?? '';
+          return ImageAnalysisPage(
+              farmId: farmId, imageId: imageId, imageUrl: imageUrl);
+        },
+      ),
+
+      // ── Claims full-screen (outside shell so bottom nav hidden) ───────
+      GoRoute(
+        path: '/claims/new',
+        builder: (_, __) => const NewClaimPage(),
+      ),
+      GoRoute(
+        path: '/claims/:claimId',
+        builder: (context, state) {
+          final claimId = state.pathParameters['claimId']!;
+          return ClaimDetailPage(claimId: claimId);
+        },
+      ),
+
+      // ── Shell (bottom nav visible) ────────────────────────────────────
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => MainShell(child: child),
@@ -134,7 +149,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-// ── Splash page (shown while auth state initialises) ──────────────────────────
+// ── Splash ────────────────────────────────────────────────────────────────────
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
