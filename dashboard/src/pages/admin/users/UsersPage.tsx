@@ -33,31 +33,69 @@ export function UsersPage() {
         title="User Management"
         subtitle={`${users?.length ?? 0} total users`}
       />
+      <div className="grid  grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-5">
-        <input
-          type="text"
-          placeholder="Search by name or email..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="flex-1 rounded-lg border border-border bg-surface px-3 py-2
-                     text-sm focus:outline-none focus:ring-2 focus:ring-primary-700"
-        />
-        <div className="flex gap-2">
-          {ROLE_FILTERS.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setRoleFilter(f.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors
-                ${roleFilter === f.value
-                  ? 'bg-primary-700 text-white'
-                  : 'bg-surface border border-border text-ink-secondary hover:bg-muted'}`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-      </div>
+  <Card>
+    <div className="p-5">
+      <p className="text-sm text-gray-500">Total Users</p>
+      <h2 className="text-3xl font-bold">{users?.length ?? 0}</h2>
+    </div>
+  </Card>
+
+  <Card>
+    <div className="p-5">
+      <p className="text-sm text-gray-500">Farmers</p>
+      <h2 className="text-3xl font-bold text-green-600">
+        {users?.filter(u => u.role === "farmer").length ?? 0}
+      </h2>
+    </div>
+  </Card>
+
+  <Card>
+    <div className="p-5">
+      <p className="text-sm text-gray-500">Officers</p>
+      <h2 className="text-3xl font-bold text-blue-600">
+        {users?.filter(u => u.role === "officer").length ?? 0}
+      </h2>
+    </div>
+  </Card>
+
+  <Card>
+    <div className="p-5">
+      <p className="text-sm text-gray-500">Admins</p>
+      <h2 className="text-3xl font-bold text-purple-600">
+        {users?.filter(u => u.role === "admin").length ?? 0}
+      </h2>
+    </div>
+  </Card>
+
+</div>
+
+     <div className="flex flex-col sm:flex-row gap-3 mb-5">
+  <input
+    type="text"
+    placeholder="Search users by name or email..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="w-full flex-1 rounded-lg border border-border bg-surface px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-700"
+  />
+
+  <div className="flex gap-2 flex-wrap">
+    {ROLE_FILTERS.map((f) => (
+      <button
+        key={f.value}
+        onClick={() => setRoleFilter(f.value)}
+        className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+          roleFilter === f.value
+            ? "bg-primary-700 text-white"
+            : "bg-surface border border-border text-ink-secondary hover:bg-muted"
+        }`}
+      >
+        {f.label}
+      </button>
+    ))}
+  </div>
+</div> 
 
       <Card padding={false}>
         {isLoading ? (
@@ -67,7 +105,7 @@ export function UsersPage() {
         ) : filtered.length === 0 ? (
           <EmptyState
             title="No users found"
-            description="Try adjusting your search or filters."
+            description="No users match the selected filters."
             icon={<UsersIcon className="h-12 w-12" />}
           />
         ) : (
@@ -82,6 +120,8 @@ export function UsersPage() {
                   <th className="text-left px-5 py-3 label">Language</th>
                   <th className="text-left px-5 py-3 label">Joined</th>
                   <th className="text-left px-5 py-3 label">Status</th>
+                  <th className="text-center px-5 py-3 label">Actions</th>
+ 
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -92,14 +132,19 @@ export function UsersPage() {
                         <div className="h-7 w-7 rounded-full bg-primary-100
                                         text-primary-700 flex items-center justify-center
                                         text-xs font-bold flex-shrink-0">
-                          {user.full_name.charAt(0)}
+                          {user.full_name
+  .split(" ")
+  .map(name => name[0])
+  .join("")
+  .slice(0, 2)
+  .toUpperCase()}
                         </div>
                         <span className="font-medium text-ink">{user.full_name}</span>
                       </div>
                     </td>
                     <td className="px-5 py-3 text-ink-secondary">{user.email}</td>
                     <td className="px-5 py-3">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full
+                      <span className={`text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full
                         ${user.role === 'admin'   ? 'bg-purple-100 text-purple-700'
                         : user.role === 'officer' ? 'bg-blue-100   text-blue-700'
                         :                          'bg-green-100  text-green-700'}`}>
@@ -123,6 +168,32 @@ export function UsersPage() {
                         {user.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
+                    
+
+
+<td className="px-5 py-3">
+  <div className="flex justify-center gap-2">
+
+    <button className="min-w-[80px] rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white">
+  View
+</button>
+
+    <button className="min-w-[80px] rounded-lg bg-yellow-500 px-3 py-2 text-xs font-medium text-white">
+      Edit
+    </button>
+
+    <button
+      className={`min-w-[95px] rounded-lg px-3 py-2 text-xs font-medium text-white ${
+  user.is_active
+    ? "bg-red-600"
+    : "bg-green-600"
+}`}
+    >
+      {user.is_active ? "Deactivate" : "Activate"}
+    </button>
+
+  </div>
+</td>
                   </tr>
                 ))}
               </tbody>
@@ -132,4 +203,4 @@ export function UsersPage() {
       </Card>
     </div>
   );
-}
+}                
