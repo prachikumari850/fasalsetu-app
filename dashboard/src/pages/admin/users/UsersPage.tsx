@@ -17,6 +17,7 @@ const ROLE_FILTERS = [
 export function UsersPage() {
   const [roleFilter, setRoleFilter] = useState('');
   const [search, setSearch]         = useState('');
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const { data: users, isLoading }  = useUsers();
 
   const filtered = (users ?? []).filter(u => {
@@ -174,23 +175,41 @@ export function UsersPage() {
 <td className="px-5 py-3">
   <div className="flex justify-center gap-2">
 
-    <button className="min-w-[80px] rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white">
+    <button
+  onClick={() => {
+    setSelectedUser(user);
+    alert(
+      `User Details\n\nName: ${user.full_name}\nEmail: ${user.email}\nRole: ${user.role}`
+    );
+  }}
+  className="min-w-[80px] rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white"
+>
   View
 </button>
-
-    <button className="min-w-[80px] rounded-lg bg-yellow-500 px-3 py-2 text-xs font-medium text-white">
-      Edit
-    </button>
+    <button
+  onClick={() => {
+    setSelectedUser(user);
+    alert(`Edit User: ${user.full_name}`);
+  }}
+  className="min-w-[80px] rounded-lg bg-yellow-500 px-3 py-2 text-xs font-medium text-white"
+>
+  Edit
+</button>
 
     <button
-      className={`min-w-[95px] rounded-lg px-3 py-2 text-xs font-medium text-white ${
-  user.is_active
-    ? "bg-red-600"
-    : "bg-green-600"
-}`}
-    >
-      {user.is_active ? "Deactivate" : "Activate"}
-    </button>
+  onClick={() => {
+    alert(
+      user.is_active
+        ? `${user.full_name} would be Deactivated`
+        : `${user.full_name} would be Activated`
+    );
+  }}
+  className={`min-w-[95px] rounded-lg px-3 py-2 text-xs font-medium text-white ${
+    user.is_active ? "bg-red-600" : "bg-green-600"
+  }`}
+>
+  {user.is_active ? "Deactivate" : "Activate"}
+</button>
 
   </div>
 </td>
