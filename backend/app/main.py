@@ -88,7 +88,7 @@ async def add_process_time_header(request: Request, call_next):
 
 app.add_exception_handler(FasalSetuException, fasalsetu_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(Exception, unhandled_exception_handler)
+
 
 app.include_router(api_router)
 
