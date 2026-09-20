@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fasalsetu/core/constants/app_colors.dart';
 import 'package:fasalsetu/features/analysis/presentation/providers/analysis_provider.dart';
 import 'package:fasalsetu/features/analysis/domain/entities/analysis_entities.dart';
+import 'package:fasalsetu/features/crop/presentation/providers/crop_provider.dart';
 import 'package:fasalsetu/shared/widgets/loading_widget.dart';
 import 'package:fasalsetu/shared/widgets/error_widget.dart';
 import 'package:fasalsetu/shared/widgets/empty_state_widget.dart';
@@ -12,13 +13,11 @@ import 'package:fasalsetu/shared/widgets/empty_state_widget.dart';
 class ImageAnalysisPage extends ConsumerWidget {
   final String farmId;
   final String imageId;
-  final String imageUrl;
 
   const ImageAnalysisPage({
     super.key,
     required this.farmId,
     required this.imageId,
-    required this.imageUrl,
   });
 
   Color _severityColor(String severity) {
@@ -40,6 +39,11 @@ class ImageAnalysisPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final params = AnalysisParams(farmId: farmId, imageId: imageId);
     final analysisAsync = ref.watch(imageAnalysisProvider(params));
+    final imagesAsync = ref.watch(farmImagesProvider(farmId));
+    final imageUrl = imagesAsync.valueOrNull
+        ?.where((image) => image.id == imageId)
+        .firstOrNull
+        ?.storageUrl;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -67,32 +71,7 @@ class ImageAnalysisPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => Container(
-                      color: AppColors.surfaceVariant,
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                    errorWidget: (_, __, ___) => Container(
-                      color: AppColors.surfaceVariant,
-                      child: const Icon(
-                        Icons.broken_image_outlined,
-                        size: 48,
-                        color: AppColors.textHint,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              _AnalysisImage(url: imageUrl, isLoading: imagesAsync.isLoading),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -240,6 +219,44 @@ class _DiseaseReportCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AnalysisImage extends StatelessWidget {
+  final String? url;
+  final bool isLoading;
+
+  const _AnalysisImage({required this.url, required this.isLoading});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: url == null
+            ? Container(
+                color: AppColors.surfaceVariant,
+                child: Center(
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: AppColors.primary)
+                      : const Icon(Icons.broken_image_outlined,
+                          size: 48, color: AppColors.textHint),
+                ),
+              )
+            : CachedNetworkImage(
+                imageUrl: url!,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                ),
+                errorWidget: (_, __, ___) => const Center(
+                  child: Icon(Icons.broken_image_outlined,
+                      size: 48, color: AppColors.textHint),
+                ),
+              ),
       ),
     );
   }

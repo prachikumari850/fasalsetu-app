@@ -32,7 +32,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
-    debugLogDiagnostics: true,
+    // GoRouter diagnostics print full locations, including query parameters.
+    // Keep them off so signed storage URLs can never reach browser logs.
+    debugLogDiagnostics: false,
     redirect: (context, state) {
       final status         = authState.status;
       final isAuthenticated = authState.isAuthenticated;
@@ -99,9 +101,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final farmId   = state.pathParameters['farmId']!;
           final imageId  = state.pathParameters['imageId']!;
-          final imageUrl = state.uri.queryParameters['imageUrl'] ?? '';
-          return ImageAnalysisPage(
-              farmId: farmId, imageId: imageId, imageUrl: imageUrl);
+          return ImageAnalysisPage(farmId: farmId, imageId: imageId);
         },
       ),
 

@@ -12,6 +12,13 @@ class CropRemoteDataSource {
     );
   }
 
+  Future<List<CropImageEntity>> getFarmImages(String farmId) async {
+    final response = await _dio.get('/crops/$farmId/images');
+    return (response.data['data'] as List<dynamic>)
+        .map((item) => CropImageEntity.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<CropImageEntity> uploadImage({
     required String farmId,
     required CropStageName stageName,

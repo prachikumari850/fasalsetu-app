@@ -8,6 +8,11 @@ final cropRemoteDataSourceProvider = Provider<CropRemoteDataSource>(
   (ref) => CropRemoteDataSource(ref.watch(dioProvider)),
 );
 
+final farmImagesProvider = FutureProvider.autoDispose
+    .family<List<CropImageEntity>, String>(
+  (ref, farmId) => ref.watch(cropRemoteDataSourceProvider).getFarmImages(farmId),
+);
+
 // Timeline provider — keyed by farm ID
 class CropTimelineNotifier
     extends FamilyAsyncNotifier<CropTimelineEntity, String> {
@@ -46,10 +51,7 @@ class CropTimelineNotifier
       // Refresh timeline after upload
       await refresh(farmId);
       return null;
-    } catch (e, stackTrace) {
-      // Development diagnostics; the UI receives a safe, useful message.
-      // ignore: avoid_print
-      print('Crop image upload failed: $e\\n$stackTrace');
+    } catch (e) {
       return _imageUploadErrorMessage(e);
     }
   }

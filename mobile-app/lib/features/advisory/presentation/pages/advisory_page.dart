@@ -332,7 +332,7 @@ class _AdvisoryCard extends ConsumerWidget {
   void _showDetail(BuildContext context, String title, String body) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16)),
         title: Text(
@@ -355,7 +355,7 @@ class _AdvisoryCard extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: const Text(
               'Close',
               style: TextStyle(color: AppColors.primary),

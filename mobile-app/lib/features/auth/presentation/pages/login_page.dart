@@ -36,7 +36,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     final state = ref.read(otpSendProvider);
 
-    debugPrint('OTP send state: hasError=${state.hasError}, error=${state.error}');
     if (state.hasError) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -48,8 +47,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       }
       return;
     }
-
-    debugPrint('Navigating to OTP page with email: ${_emailController.text.trim()}');
 
     if (mounted) {
   context.push(

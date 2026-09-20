@@ -533,8 +533,7 @@ class _ImageThumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push(
-        '/farms/${image.farmId}/analysis/${image.id}'
-        '?imageUrl=${Uri.encodeComponent(image.storageUrl)}',
+        '/farms/${image.farmId}/analysis/${image.id}',
       ),
       child: Stack(
         children: [
