@@ -30,12 +30,12 @@ class HealthClassifier:
 
     def _load_model(self) -> None:
         if not EFFICIENTNET_MODEL_PATH.exists():
-            logger.warning(
-                "EfficientNet ONNX model not found — running in mock mode",
+            logger.error(
+                "EfficientNet ONNX model not found",
                 path=str(EFFICIENTNET_MODEL_PATH),
             )
             self.session = None
-            return
+            raise RuntimeError("EfficientNet model file is missing")
 
         providers = ["CPUExecutionProvider"]
         self.session = ort.InferenceSession(
@@ -83,7 +83,7 @@ class HealthClassifier:
         Returns dict with class_name, confidence, health_score, all_probs.
         """
         if self.session is None:
-            return self._mock_classification()
+            raise RuntimeError("EfficientNet model is not available")
 
         try:
             inp        = self._preprocess(image_bytes)
@@ -112,18 +112,4 @@ class HealthClassifier:
             }
         except Exception as e:
             logger.error("EfficientNet inference failed", error=str(e))
-            return self._mock_classification()
-
-    def _mock_classification(self) -> dict:
-        import random
-        classes     = self.config["class_names"]
-        class_name  = random.choice(classes)
-        confidence  = round(random.uniform(0.65, 0.92), 4)
-        health_score = self._score_from_class(class_name, confidence)
-        return {
-            "class_id":     classes.index(class_name),
-            "class_name":   class_name,
-            "confidence":   confidence,
-            "health_score": health_score,
-            "all_probs":    {c: round(1 / len(classes), 4) for c in classes},
-        }
+            raise RuntimeError("EfficientNet inference failed") from e

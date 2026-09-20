@@ -8,6 +8,7 @@ from app.models.crop import CropStageName
 from app.core.security import get_current_user_id
 from app.ai.pipeline import run_inference_pipeline
 from app.core.image_utils import read_image_bytes
+from app.core.exceptions import ValidationException
 from datetime import datetime, timezone
 import uuid
 import structlog
@@ -67,6 +68,9 @@ async def upload_crop_image(
             )
         except ValueError:
             captured_dt = None
+
+    if file.content_type not in {"image/jpeg", "image/png", "image/webp"}:
+        raise ValidationException("Unsupported file type. Please upload a JPEG, PNG, or WebP image.")
 
     # Read image bytes before passing to service
     image_bytes = await read_image_bytes(file)

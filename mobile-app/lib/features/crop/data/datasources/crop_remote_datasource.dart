@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fasalsetu/features/crop/domain/entities/crop_entities.dart';
 
@@ -16,21 +15,25 @@ class CropRemoteDataSource {
   Future<CropImageEntity> uploadImage({
     required String farmId,
     required CropStageName stageName,
-    required File imageFile,
+    required List<int> imageBytes,
+    required String fileName,
+    required String? mimeType,
     required double latitude,
     required double longitude,
     required DateTime capturedAt,
   }) async {
-    final fileName = imageFile.path.split('/').last;
     final formData = FormData.fromMap({
       'farm_id': farmId,
       'stage_name': stageName.value,
       'latitude': latitude.toString(),
       'longitude': longitude.toString(),
       'captured_at': capturedAt.toIso8601String(),
-      'file': await MultipartFile.fromFile(
-        imageFile.path,
+      // XFile.path is a browser blob URL on Flutter Web, not a filesystem path.
+      // Upload the bytes so the same request works on web and mobile.
+      'file': MultipartFile.fromBytes(
+        imageBytes,
         filename: fileName,
+        contentType: DioMediaType.parse(mimeType ?? 'image/jpeg'),
       ),
     });
 

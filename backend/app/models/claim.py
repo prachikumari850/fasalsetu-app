@@ -44,9 +44,9 @@ class Claim(Base):
         UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
     )
     status = Column(
-        SAEnum(ClaimStatus), nullable=False, default=ClaimStatus.draft, index=True
+        SAEnum(ClaimStatus, name="claim_status"), nullable=False, default=ClaimStatus.draft, index=True
     )
-    damage_type = Column(SAEnum(DamageType), nullable=False)
+    damage_type = Column(SAEnum(DamageType, name="damage_type"), nullable=False)
     damage_description = Column(Text, nullable=True)
     estimated_loss = Column(Numeric(12, 2), nullable=True)
     affected_acres = Column(Numeric(8, 3), nullable=True)

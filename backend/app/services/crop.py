@@ -15,7 +15,8 @@ from app.core.image_utils import (
 )
 from app.core.storage import upload_image_to_storage
 from app.core.exceptions import (
-    ForbiddenException, ValidationException, NotFoundException
+    ForbiddenException, ValidationException, NotFoundException,
+    ServiceUnavailableException,
 )
 from datetime import datetime, timezone
 import uuid
@@ -74,7 +75,7 @@ def _fetch_farm_rest(farm_id: str) -> dict | None:
         return rows[0] if rows else None
     except Exception as e:
         logger.error("Farm REST fetch failed", error=str(e), farm_id=farm_id)
-        return None
+        raise ServiceUnavailableException("Unable to load farm data. Please try again.") from e
 
 
 def _fetch_crop_stages_rest(farm_id: str) -> list[dict]:
@@ -86,7 +87,7 @@ def _fetch_crop_stages_rest(farm_id: str) -> list[dict]:
         return resp.json()
     except Exception as e:
         logger.error("Crop stages REST fetch failed", error=str(e), farm_id=farm_id)
-        return []
+        raise ServiceUnavailableException("Unable to load crop timeline. Please try again.") from e
 
 
 def _fetch_crop_images_rest(stage_id: str) -> list[dict]:
@@ -98,7 +99,7 @@ def _fetch_crop_images_rest(stage_id: str) -> list[dict]:
         return resp.json()
     except Exception as e:
         logger.error("Crop images REST fetch failed", error=str(e), stage_id=stage_id)
-        return []
+        raise ServiceUnavailableException("Unable to load crop timeline images. Please try again.") from e
 
 def _fetch_crop_image_rest(image_id: str, farm_id: str) -> dict | None:
     url = f"{_get_supabase_url()}/rest/v1/crop_images"

@@ -21,7 +21,7 @@ class User(Base):
     email = Column(String, nullable=False, unique=True, index=True)
     full_name = Column(String, nullable=False)
     phone = Column(String, nullable=True)
-    role = Column(SAEnum(UserRole), nullable=False, default=UserRole.farmer)
+    role = Column(SAEnum(UserRole, name="user_role"), nullable=False, default=UserRole.farmer)
     district = Column(String, nullable=True)
     state = Column(String, nullable=False, default="Uttar Pradesh")
     profile_url = Column(Text, nullable=True)

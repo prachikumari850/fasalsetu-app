@@ -83,7 +83,9 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     if (state.hasError && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.otpInvalid),
+          content: Text(
+            'OTP could not be verified. It may be invalid or expired. Please try again.',
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -106,6 +108,16 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     await ref.read(otpSendProvider.notifier).sendOtp(
           email: widget.email,
         );
+    final state = ref.read(otpSendProvider);
+    if (state.hasError) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Unable to resend OTP. Check your connection and try again.'),
+          backgroundColor: AppColors.error,
+        ));
+      }
+      return;
+    }
     _startTimer();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -252,7 +264,14 @@ class _OtpBox extends StatelessWidget {
         onChanged: onChanged,
         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
+              // Explicit color keeps digits readable regardless of any
+              // platform/theme text-field defaults.
+              color: AppColors.textPrimary,
             ),
+        cursorColor: AppColors.primary,
+        obscureText: false,
+        enableSuggestions: false,
+        autocorrect: false,
         decoration: InputDecoration(
           counterText: '',
           filled: true,

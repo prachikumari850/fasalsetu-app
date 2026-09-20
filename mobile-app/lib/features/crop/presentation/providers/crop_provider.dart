@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 import 'package:fasalsetu/core/network/dio_client.dart';
 import 'package:fasalsetu/features/crop/data/datasources/crop_remote_datasource.dart';
 import 'package:fasalsetu/features/crop/domain/entities/crop_entities.dart';
@@ -23,10 +23,12 @@ class CropTimelineNotifier
     );
   }
 
-  Future<bool> uploadImage({
+  Future<String?> uploadImage({
     required String farmId,
     required CropStageName stageName,
-    required File imageFile,
+    required List<int> imageBytes,
+    required String fileName,
+    String? mimeType,
     required double latitude,
     required double longitude,
   }) async {
@@ -34,16 +36,54 @@ class CropTimelineNotifier
       await ref.read(cropRemoteDataSourceProvider).uploadImage(
             farmId: farmId,
             stageName: stageName,
-            imageFile: imageFile,
+            imageBytes: imageBytes,
+            fileName: fileName,
+            mimeType: mimeType,
             latitude: latitude,
             longitude: longitude,
             capturedAt: DateTime.now().toUtc(),
           );
       // Refresh timeline after upload
       await refresh(farmId);
-      return true;
-    } catch (e) {
-      return false;
+      return null;
+    } catch (e, stackTrace) {
+      // Development diagnostics; the UI receives a safe, useful message.
+      // ignore: avoid_print
+      print('Crop image upload failed: $e\\n$stackTrace');
+      return _imageUploadErrorMessage(e);
+    }
+  }
+
+  String _imageUploadErrorMessage(Object error) {
+    if (error is! DioException) {
+      return 'Unable to process the selected image. Please try another image.';
+    }
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.receiveTimeout) {
+      return 'The upload timed out. Please try again.';
+    }
+    if (error.type == DioExceptionType.connectionError) {
+      return 'Unable to connect to the server. Please check your connection.';
+    }
+    switch (error.response?.statusCode) {
+      case 400:
+        return 'Invalid image request.';
+      case 401:
+      case 403:
+        return 'Authentication failed. Please log in again.';
+      case 404:
+        return 'The selected farm or upload service was not found.';
+      case 413:
+        return 'Image is too large. Please select an image smaller than 10 MB.';
+      case 422:
+        return 'Invalid image or request data. Please choose a valid JPEG, PNG, or WebP image.';
+      case 500:
+        return 'Server error while processing the image. Please try again.';
+      case 503:
+        return 'The data service is temporarily unavailable. Please try again.';
+      default:
+        return 'Upload failed. Please try again.';
     }
   }
 

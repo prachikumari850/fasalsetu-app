@@ -171,17 +171,10 @@ async def run_inference_pipeline(
             image_id=str(image_id),
             error=str(e),
         )
-        # Mark as processed even on failure to avoid retry loops
+        # Keep ai_processed false.  Marking a failed inference as complete hid
+        # real model/database failures from both the UI and future retries.
         try:
-            from sqlalchemy import select as sa_select
-            result = await db.execute(
-                sa_select(CropImage).where(CropImage.id == image_id)
-            )
-            crop_image = result.scalar_one_or_none()
-            if crop_image:
-                crop_image.ai_processed = True
-                await db.flush()
-            await db.commit()
+            await db.rollback()
         except Exception:
             pass
         raise

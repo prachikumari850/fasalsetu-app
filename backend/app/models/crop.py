@@ -209,7 +209,9 @@ class CropStage(Base):
         nullable=False,
         index=True,
     )
-    stage_name    = Column(SAEnum(CropStageName), nullable=False)
+    # The existing Supabase schema uses snake_case PostgreSQL enum names.
+    # Explicit names prevent SQLAlchemy deriving e.g. ``cropstagename``.
+    stage_name    = Column(SAEnum(CropStageName, name="crop_stage_name"), nullable=False)
     expected_date = Column(Date, nullable=True)
     actual_date   = Column(Date, nullable=True)
     notes         = Column(Text, nullable=True)
@@ -270,7 +272,7 @@ class DiseaseReport(Base):
     )
     disease_name  = Column(String, nullable=False, index=True)
     confidence    = Column(Numeric(5, 4), nullable=False)
-    severity      = Column(SAEnum(SeverityLevel), nullable=False)
+    severity      = Column(SAEnum(SeverityLevel, name="severity_level"), nullable=False)
     affected_area = Column(Numeric(5, 2), nullable=True)
     bbox_data     = Column(JSONB, nullable=True)
     model_version = Column(String, nullable=False, default="yolov8-v1")
@@ -306,7 +308,7 @@ class Advisory(Base):
     body_en   = Column(Text, nullable=False)
     body_hi   = Column(Text, nullable=False)
     priority  = Column(
-        SAEnum(AdvisoryPriority),
+        SAEnum(AdvisoryPriority, name="advisory_priority"),
         nullable=False,
         default=AdvisoryPriority.medium,
     )

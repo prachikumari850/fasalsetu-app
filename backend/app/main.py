@@ -9,7 +9,9 @@ from app.core.exceptions import (
     fasalsetu_exception_handler,
     validation_exception_handler,
     unhandled_exception_handler,
+    database_exception_handler,
 )
+from sqlalchemy.exc import DBAPIError
 from app.api.v1.router import api_router
 import time
 import re
@@ -88,6 +90,7 @@ async def add_process_time_header(request: Request, call_next):
 
 app.add_exception_handler(FasalSetuException, fasalsetu_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(DBAPIError, database_exception_handler)
 
 
 app.include_router(api_router)

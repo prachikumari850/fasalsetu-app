@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,6 +30,32 @@ class StageCardWidget extends ConsumerStatefulWidget {
 class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
   bool _uploading = false;
   bool _expanded = false;
+
+  Future<bool> _confirmUpload(XFile picked) async {
+    final bytes = await picked.readAsBytes();
+    if (!mounted) return false;
+    return await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Upload this photo?'),
+            content: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.memory(bytes, fit: BoxFit.cover),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: const Text('Choose another'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: const Text('Upload'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
 
   String _stageLabel(CropStageName stage, AppLocalizations l10n) {
     switch (stage) {
@@ -75,26 +100,8 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
 
   Future<void> _pickAndUpload(ImageSource source) async {
     final l10n = AppLocalizations.of(context)!;
-
-    // Get GPS first
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.gpsRequired),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-      return;
-    }
-
-    // Pick image
+    // Invoke the browser picker immediately from the tap callback. Awaiting
+    // geolocation first loses the Web user-activation required by browsers.
     final picker = ImagePicker();
     final picked = await picker.pickImage(
       source: source,
@@ -104,20 +111,44 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
     );
     if (picked == null) return;
 
+    try {
+      if (!await _confirmUpload(picked)) return;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('The selected image could not be read. Please choose another image.'),
+          backgroundColor: AppColors.error,
+        ));
+      }
+      return;
+    }
+
     setState(() => _uploading = true);
 
     try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        throw StateError(l10n.gpsRequired);
+      }
+
       // Get current position
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      final success = await ref
+      final imageBytes = await picked.readAsBytes();
+      final uploadError = await ref
           .read(cropTimelineProvider(widget.farmId).notifier)
           .uploadImage(
             farmId: widget.farmId,
             stageName: widget.timelineStage.stage.stageName,
-            imageFile: File(picked.path),
+            imageBytes: imageBytes,
+            fileName: picked.name.isEmpty ? 'crop_photo.jpg' : picked.name,
+            mimeType: picked.mimeType,
             latitude: position.latitude,
             longitude: position.longitude,
           );
@@ -126,9 +157,10 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success ? l10n.photoUploaded : l10n.error,
+              uploadError ?? l10n.photoUploaded,
             ),
-            backgroundColor: success ? AppColors.success : AppColors.error,
+            backgroundColor:
+                uploadError == null ? AppColors.success : AppColors.error,
           ),
         );
       }

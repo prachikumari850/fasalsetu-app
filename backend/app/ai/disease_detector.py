@@ -31,12 +31,12 @@ class DiseaseDetector:
 
     def _load_model(self) -> None:
         if not YOLO_MODEL_PATH.exists():
-            logger.warning(
-                "YOLOv8 ONNX model not found — running in mock mode",
+            logger.error(
+                "YOLOv8 ONNX model not found",
                 path=str(YOLO_MODEL_PATH),
             )
             self.session = None
-            return
+            raise RuntimeError("YOLOv8 model file is missing")
 
         providers = ["CPUExecutionProvider"]
         self.session = ort.InferenceSession(
@@ -148,10 +148,10 @@ class DiseaseDetector:
     def detect(self, image_bytes: bytes) -> list[dict]:
         """
         Run disease detection on image bytes.
-        Returns list of detections or mock data if model not loaded.
+        Returns real model detections.
         """
         if self.session is None:
-            return self._mock_detection()
+            raise RuntimeError("YOLOv8 model is not available")
 
         try:
             inp    = self._preprocess(image_bytes)
@@ -164,24 +164,4 @@ class DiseaseDetector:
             )
         except Exception as e:
             logger.error("YOLOv8 inference failed", error=str(e))
-            return self._mock_detection()
-
-    def _mock_detection(self) -> list[dict]:
-        """
-        Returns mock result when model is not available.
-        Used during development before training completes.
-        """
-        import random
-        if random.random() > 0.4:
-            return [{
-                "class_id":   0,
-                "class_name": "healthy",
-                "confidence": round(random.uniform(0.75, 0.95), 4),
-                "bbox":       {"x1": 0.1, "y1": 0.1, "x2": 0.9, "y2": 0.9},
-            }]
-        return [{
-            "class_id":   1,
-            "class_name": "leaf_blast",
-            "confidence": round(random.uniform(0.55, 0.80), 4),
-            "bbox":       {"x1": 0.2, "y1": 0.3, "x2": 0.7, "y2": 0.8},
-        }]
+            raise RuntimeError("YOLOv8 inference failed") from e

@@ -1,6 +1,7 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from sqlalchemy.exc import DBAPIError, OperationalError
 import structlog
 
 logger = structlog.get_logger()
@@ -37,6 +38,11 @@ class ValidationException(FasalSetuException):
 class ConflictException(FasalSetuException):
     def __init__(self, detail: str):
         super().__init__(409, detail, "CONFLICT")
+
+
+class ServiceUnavailableException(FasalSetuException):
+    def __init__(self, detail: str = "The data service is temporarily unavailable"):
+        super().__init__(503, detail, "SERVICE_UNAVAILABLE")
 
 
 async def fasalsetu_exception_handler(
@@ -83,5 +89,23 @@ async def unhandled_exception_handler(
             "code": "INTERNAL_ERROR",
             "detail": "An unexpected error occurred",
             "success": False,
+        },
+    )
+
+
+async def database_exception_handler(request: Request, exc: DBAPIError) -> JSONResponse:
+    """Keep database credentials/driver details out of API responses."""
+    logger.error(
+        "Database operation failed",
+        exc_type=type(exc).__name__,
+        detail=str(exc),
+        path=str(request.url),
+    )
+    return JSONResponse(
+        status_code=503,
+        content={
+            "success": False,
+            "code": "DATABASE_UNAVAILABLE",
+            "detail": "The data service is temporarily unavailable. Please try again.",
         },
     )
