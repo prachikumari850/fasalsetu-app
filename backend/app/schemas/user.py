@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional
 from datetime import datetime
+import re
 import uuid
 from app.models.user import UserRole
 
@@ -26,8 +27,8 @@ class VerifyOtpRequest(BaseModel):
     @classmethod
     def validate_otp(cls, v: str) -> str:
         v = v.strip()
-        if not v.isdigit() or len(v) != 8:
-            raise ValueError("OTP must be exactly 8 digits")
+        if re.fullmatch(r"[0-9]{6}", v) is None:
+            raise ValueError("OTP must be exactly 6 digits")
         return v
 
 

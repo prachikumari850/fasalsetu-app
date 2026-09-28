@@ -257,7 +257,7 @@ abstract class AppLocalizations {
   /// No description provided for @otpHint.
   ///
   /// In en, this message translates to:
-  /// **'8-digit code'**
+  /// **'6-digit code'**
   String get otpHint;
 
   /// No description provided for @otpRequired.
@@ -269,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @otpInvalid.
   ///
   /// In en, this message translates to:
-  /// **'OTP must be 8 digits'**
+  /// **'OTP must be 6 digits'**
   String get otpInvalid;
 
   /// No description provided for @otpResend.

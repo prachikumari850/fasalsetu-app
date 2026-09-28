@@ -52,7 +52,7 @@ class AppConstants {
 
   // OTP
   static const int otpResendSeconds = 60;
-  static const int otpLength = 8;
+  static const int otpLength = 6;
 
   // Map
   static const double defaultMapZoom = 15.0;

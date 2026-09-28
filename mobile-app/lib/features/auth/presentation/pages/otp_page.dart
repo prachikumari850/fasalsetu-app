@@ -70,6 +70,37 @@ class _OtpPageState extends ConsumerState<OtpPage> {
 
   bool get _isOtpComplete => _fullOtp.length == AppConstants.otpLength;
 
+  void _handleOtpChanged(int index, String value) {
+    if (value.length > 1) {
+      // Android autofill and web/mobile paste can supply the entire OTP to one
+      // field. A full code always fills the row from its first box; shorter
+      // pasted fragments continue from the active box.
+      final startIndex = value.length >= AppConstants.otpLength ? 0 : index;
+      final digits = value.substring(
+        0,
+        AppConstants.otpLength - startIndex,
+      );
+      for (var offset = 0; offset < digits.length; offset++) {
+        _controllers[startIndex + offset].text = digits[offset];
+      }
+      for (var clearIndex = startIndex + digits.length;
+          clearIndex < AppConstants.otpLength;
+          clearIndex++) {
+        _controllers[clearIndex].clear();
+      }
+      if (_isOtpComplete) {
+        FocusScope.of(context).unfocus();
+      } else {
+        _focusNodes[startIndex + digits.length].requestFocus();
+      }
+    } else if (value.isNotEmpty && index < AppConstants.otpLength - 1) {
+      _focusNodes[index + 1].requestFocus();
+    } else if (value.isEmpty && index > 0) {
+      _focusNodes[index - 1].requestFocus();
+    }
+    setState(() {});
+  }
+
   Future<void> _verifyOtp() async {
     if (!_isOtpComplete) return;
 
@@ -184,19 +215,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                       child: _OtpBox(
                         controller: _controllers[index],
                         focusNode: _focusNodes[index],
-                        onChanged: (value) {
-                          if (value.isNotEmpty &&
-                              index < AppConstants.otpLength - 1) {
-                            _focusNodes[index + 1].requestFocus();
-                          }
-                          if (value.isEmpty && index > 0) {
-                            _focusNodes[index - 1].requestFocus();
-                          }
-                          if (_isOtpComplete) {
-                            FocusScope.of(context).unfocus();
-                          }
-                          setState(() {});
-                        },
+                        onChanged: (value) => _handleOtpChanged(index, value),
                       ),
                     ),
                   );
@@ -259,8 +278,10 @@ class _OtpBox extends StatelessWidget {
         focusNode: focusNode,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
-        maxLength: 1,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        autofillHints: const [AutofillHints.oneTimeCode],
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+        ],
         onChanged: onChanged,
         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
