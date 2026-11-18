@@ -143,7 +143,8 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     if (state.hasError) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Unable to resend OTP. Check your connection and try again.'),
+          content: Text(
+              'Unable to resend OTP. Check your connection and try again.'),
           backgroundColor: AppColors.error,
         ));
       }

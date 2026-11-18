@@ -1,20 +1,3 @@
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:fasalsetu/core/network/dio_client.dart';
-// import 'package:fasalsetu/features/claims/data/datasources/claims_remote_datasource.dart';
-// import 'package:fasalsetu/features/claims/domain/entities/claim_entities.dart';
-
-// final claimsRemoteDataSourceProvider = Provider<ClaimsRemoteDataSource>(
-//   (ref) => ClaimsRemoteDataSource(ref.watch(dioProvider)),
-// );
-
-// final claimsListProvider = FutureProvider.autoDispose<List<ClaimSummary>>(
-//   (ref) => ref.watch(claimsRemoteDataSourceProvider).listClaims(),
-// );
-
-// final claimDetailProvider = FutureProvider.autoDispose.family<ClaimDetail, String>(
-//   (ref, claimId) => ref.watch(claimsRemoteDataSourceProvider).getClaim(claimId),
-// );
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fasalsetu/core/network/dio_client.dart';
 import 'package:fasalsetu/features/claims/data/datasources/claims_remote_datasource.dart';

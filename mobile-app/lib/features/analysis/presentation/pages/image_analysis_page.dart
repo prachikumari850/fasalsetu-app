@@ -196,7 +196,8 @@ class _DiseaseReportCard extends StatelessWidget {
               children: [
                 const Text(
                   'Confidence: ',
-                  style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style:
+                      TextStyle(fontSize: 12, color: AppColors.textSecondary),
                 ),
                 Text(
                   '${(report.confidence * 100).toStringAsFixed(1)}%',
@@ -241,7 +242,8 @@ class _AnalysisImage extends StatelessWidget {
                 color: AppColors.surfaceVariant,
                 child: Center(
                   child: isLoading
-                      ? const CircularProgressIndicator(color: AppColors.primary)
+                      ? const CircularProgressIndicator(
+                          color: AppColors.primary)
                       : const Icon(Icons.broken_image_outlined,
                           size: 48, color: AppColors.textHint),
                 ),

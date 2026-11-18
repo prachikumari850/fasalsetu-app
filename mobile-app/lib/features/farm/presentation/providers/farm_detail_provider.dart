@@ -7,6 +7,5 @@ import 'package:fasalsetu/features/farm/domain/entities/farm_entity.dart';
 /// no new datasource, no duplicate class.
 final farmDetailProvider =
     FutureProvider.autoDispose.family<FarmEntity, String>(
-  (ref, farmId) =>
-      ref.read(farmRemoteDataSourceProvider).getFarm(farmId),
+  (ref, farmId) => ref.read(farmRemoteDataSourceProvider).getFarm(farmId),
 );

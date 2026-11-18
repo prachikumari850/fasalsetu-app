@@ -21,19 +21,27 @@ import 'package:fasalsetu/shared/widgets/empty_state_widget.dart';
 
 Color _priorityColor(String priority) {
   switch (priority) {
-    case 'urgent': return AppColors.priorityUrgent;
-    case 'high':   return AppColors.priorityHigh;
-    case 'medium': return AppColors.priorityMedium;
-    default:       return AppColors.priorityLow;
+    case 'urgent':
+      return AppColors.priorityUrgent;
+    case 'high':
+      return AppColors.priorityHigh;
+    case 'medium':
+      return AppColors.priorityMedium;
+    default:
+      return AppColors.priorityLow;
   }
 }
 
 String _priorityLabel(String priority) {
   switch (priority) {
-    case 'urgent': return 'Urgent';
-    case 'high':   return 'High';
-    case 'medium': return 'Medium';
-    default:       return 'Low';
+    case 'urgent':
+      return 'Urgent';
+    case 'high':
+      return 'High';
+    case 'medium':
+      return 'Medium';
+    default:
+      return 'Low';
   }
 }
 
@@ -55,7 +63,7 @@ class _AdvisoryPageState extends ConsumerState<AdvisoryPage> {
   @override
   Widget build(BuildContext context) {
     final farmsAsync = ref.watch(myFarmsProvider);
-    final showHindi  = ref.watch(_showHindiProvider);
+    final showHindi = ref.watch(_showHindiProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -101,7 +109,7 @@ class _AdvisoryPageState extends ConsumerState<AdvisoryPage> {
 
           // initialise on first build
           _selectedFarmId ??= farms.first.id;
-          final farmId        = _selectedFarmId!;
+          final farmId = _selectedFarmId!;
           final advisoriesAsync = ref.watch(advisoriesProvider(farmId));
 
           return Column(
@@ -141,8 +149,7 @@ class _AdvisoryPageState extends ConsumerState<AdvisoryPage> {
                   loading: () => const LoadingWidget(),
                   error: (err, _) => AppErrorWidget(
                     message: err.toString(),
-                    onRetry: () =>
-                        ref.invalidate(advisoriesProvider(farmId)),
+                    onRetry: () => ref.invalidate(advisoriesProvider(farmId)),
                   ),
                   data: (advisories) {
                     if (advisories.isEmpty) {
@@ -162,9 +169,9 @@ class _AdvisoryPageState extends ConsumerState<AdvisoryPage> {
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                         itemCount: advisories.length,
                         itemBuilder: (context, i) => _AdvisoryCard(
-                          advisory:  advisories[i],
+                          advisory: advisories[i],
                           showHindi: showHindi,
-                          farmId:    farmId,
+                          farmId: farmId,
                         ),
                       ),
                     );
@@ -196,8 +203,8 @@ class _AdvisoryCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final color = _priorityColor(advisory.priority);
     final title = showHindi ? advisory.titleHi : advisory.titleEn;
-    final body  = showHindi ? advisory.bodyHi  : advisory.bodyEn;
-    final date  = advisory.createdAt.split('T').first;
+    final body = showHindi ? advisory.bodyHi : advisory.bodyEn;
+    final date = advisory.createdAt.split('T').first;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -253,9 +260,8 @@ class _AdvisoryCard extends ConsumerWidget {
                                   : FontWeight.bold,
                               fontSize: 14,
                               color: AppColors.textPrimary,
-                              fontFamily: showHindi
-                                  ? 'NotoSansDevanagari'
-                                  : null,
+                              fontFamily:
+                                  showHindi ? 'NotoSansDevanagari' : null,
                             ),
                           ),
                         ),
@@ -333,8 +339,7 @@ class _AdvisoryCard extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           title,
           style: TextStyle(

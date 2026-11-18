@@ -383,9 +383,13 @@ class _FarmRegisterPageState extends ConsumerState<FarmRegisterPage> {
 
                         if (points.isNotEmpty) {
                           _centerPoint = LatLng(
-                            points.map((p) => p.latitude).reduce((a, b) => a + b) /
+                            points
+                                    .map((p) => p.latitude)
+                                    .reduce((a, b) => a + b) /
                                 points.length,
-                            points.map((p) => p.longitude).reduce((a, b) => a + b) /
+                            points
+                                    .map((p) => p.longitude)
+                                    .reduce((a, b) => a + b) /
                                 points.length,
                           );
                         }

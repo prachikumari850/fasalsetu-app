@@ -156,7 +156,6 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
                     onChanged: (v) => setState(() => _selectedFarmId = v),
                   ),
                 ),
-
                 const SizedBox(height: 24),
                 const Text(
                   'Damage Type',
@@ -169,21 +168,18 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
                   children: _damageTypes.map((dt) {
                     final selected = _selectedDamageType == dt.$1;
                     return GestureDetector(
-                      onTap: () =>
-                          setState(() => _selectedDamageType = dt.$1),
+                      onTap: () => setState(() => _selectedDamageType = dt.$1),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 10),
                         decoration: BoxDecoration(
-                          color: selected
-                              ? AppColors.primary
-                              : AppColors.surface,
+                          color:
+                              selected ? AppColors.primary : AppColors.surface,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: selected
-                                ? AppColors.primary
-                                : AppColors.border,
+                            color:
+                                selected ? AppColors.primary : AppColors.border,
                           ),
                         ),
                         child: Row(
@@ -192,15 +188,20 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
                             Icon(
                               dt.$3,
                               size: 16,
-                              color: selected ? Colors.white : AppColors.textSecondary,
+                              color: selected
+                                  ? Colors.white
+                                  : AppColors.textSecondary,
                             ),
                             const SizedBox(width: 6),
                             Text(
                               dt.$2,
                               style: TextStyle(
-                                color: selected ? Colors.white : AppColors.textPrimary,
-                                fontWeight:
-                                    selected ? FontWeight.w600 : FontWeight.normal,
+                                color: selected
+                                    ? Colors.white
+                                    : AppColors.textPrimary,
+                                fontWeight: selected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
                                 fontSize: 13,
                               ),
                             ),
@@ -210,7 +211,6 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
                     );
                   }).toList(),
                 ),
-
                 const SizedBox(height: 24),
                 const Text(
                   'Description (optional)',
@@ -230,7 +230,6 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
                 Row(
                   children: [
@@ -289,7 +288,6 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 32),
                 AppButton(
                   label: 'Submit Claim',

@@ -13,7 +13,7 @@ class StageCardWidget extends ConsumerStatefulWidget {
   final TimelineStageEntity timelineStage;
   final String farmId;
   final int stageIndex;
-  final bool showConnector; 
+  final bool showConnector;
 
   const StageCardWidget({
     super.key,
@@ -116,7 +116,8 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('The selected image could not be read. Please choose another image.'),
+          content: Text(
+              'The selected image could not be read. Please choose another image.'),
           backgroundColor: AppColors.error,
         ));
       }
@@ -316,8 +317,9 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                 Expanded(
                   child: Container(
                     width: 2,
-                    color:
-                        isCompleted ? color.withValues(alpha: 0.4) : AppColors.border,
+                    color: isCompleted
+                        ? color.withValues(alpha: 0.4)
+                        : AppColors.border,
                   ),
                 ),
             ],
@@ -472,8 +474,8 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                                     ),
                                     tooltip: l10n.stageCompleted,
                                     style: IconButton.styleFrom(
-                                      backgroundColor:
-                                          AppColors.success.withValues(alpha: 0.1),
+                                      backgroundColor: AppColors.success
+                                          .withValues(alpha: 0.1),
                                     ),
                                   ),
                                 ],
@@ -490,7 +492,8 @@ class _StageCardWidgetState extends ConsumerState<StageCardWidget> {
                                 color: AppColors.warning.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                    color: AppColors.warning.withValues(alpha: 0.3)),
+                                    color: AppColors.warning
+                                        .withValues(alpha: 0.3)),
                               ),
                               child: const Row(
                                 children: [
@@ -546,8 +549,8 @@ class _ImageThumbnail extends StatelessWidget {
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(
                 color: AppColors.surfaceVariant,
-                child: const Icon(Icons.image_outlined,
-                    color: AppColors.textHint),
+                child:
+                    const Icon(Icons.image_outlined, color: AppColors.textHint),
               ),
               errorWidget: (_, __, ___) => Container(
                 color: AppColors.surfaceVariant,

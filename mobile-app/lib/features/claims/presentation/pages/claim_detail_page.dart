@@ -25,27 +25,31 @@ import 'package:fasalsetu/shared/widgets/error_widget.dart';
 
 // Exact values from backend/app/models/claim.py DamageType enum
 const _damageTypes = [
-  ('drought', 'Drought',  Icons.wb_sunny_outlined),
-  ('flood',   'Flood',    Icons.water_outlined),
-  ('hail',    'Hail',     Icons.ac_unit_outlined),
-  ('pest',    'Pest',     Icons.pest_control_outlined),
-  ('disease', 'Disease',  Icons.coronavirus_outlined),
-  ('fire',    'Fire',     Icons.local_fire_department_outlined),
-  ('other',   'Other',    Icons.help_outline_rounded),
+  ('drought', 'Drought', Icons.wb_sunny_outlined),
+  ('flood', 'Flood', Icons.water_outlined),
+  ('hail', 'Hail', Icons.ac_unit_outlined),
+  ('pest', 'Pest', Icons.pest_control_outlined),
+  ('disease', 'Disease', Icons.coronavirus_outlined),
+  ('fire', 'Fire', Icons.local_fire_department_outlined),
+  ('other', 'Other', Icons.help_outline_rounded),
 ];
 
 TrustScoreEntity _toTrust(ClaimDetail claim) {
   final score = claim.trustScore;
   String? grade;
   if (score != null) {
-    if (score >= 80)      grade = 'A';
-    else if (score >= 60) grade = 'B';
-    else if (score >= 40) grade = 'C';
-    else if (score >= 20) grade = 'D';
-    else                  grade = 'F';
+    if (score >= 80)
+      grade = 'A';
+    else if (score >= 60)
+      grade = 'B';
+    else if (score >= 40)
+      grade = 'C';
+    else if (score >= 20)
+      grade = 'D';
+    else
+      grade = 'F';
   }
-  return TrustScoreEntity(
-      farmId: claim.farmId, score: score, grade: grade);
+  return TrustScoreEntity(farmId: claim.farmId, score: score, grade: grade);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -61,11 +65,11 @@ class NewClaimPage extends ConsumerStatefulWidget {
 
 class _NewClaimPageState extends ConsumerState<NewClaimPage> {
   String? _selectedFarmId;
-  String  _selectedDamageType = 'drought';
-  final   _descController     = TextEditingController();
-  final   _lossController     = TextEditingController();
-  final   _acresController    = TextEditingController();
-  final   _formKey            = GlobalKey<FormState>();
+  String _selectedDamageType = 'drought';
+  final _descController = TextEditingController();
+  final _lossController = TextEditingController();
+  final _acresController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -83,13 +87,13 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
     }
 
     final request = ClaimCreateRequest(
-      farmId:           _selectedFarmId!,
-      damageType:       _selectedDamageType,
+      farmId: _selectedFarmId!,
+      damageType: _selectedDamageType,
       damageDescription: _descController.text.trim().isEmpty
           ? null
           : _descController.text.trim(),
-      estimatedLoss:  double.tryParse(_lossController.text.trim()),
-      affectedAcres:  double.tryParse(_acresController.text.trim()),
+      estimatedLoss: double.tryParse(_lossController.text.trim()),
+      affectedAcres: double.tryParse(_acresController.text.trim()),
     );
 
     final created =
@@ -114,7 +118,7 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
 
   @override
   Widget build(BuildContext context) {
-    final farmsAsync  = ref.watch(myFarmsProvider);
+    final farmsAsync = ref.watch(myFarmsProvider);
     final isSubmitting = ref.watch(createClaimProvider).isLoading;
 
     return Scaffold(
@@ -208,9 +212,8 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
                           color: selected
                               ? AppColors.primary
                               : AppColors.textSecondary,
-                          fontWeight: selected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.normal,
                         ),
                         onSelected: (_) =>
                             setState(() => _selectedDamageType = dt.$1),
@@ -269,8 +272,8 @@ class _NewClaimPageState extends ConsumerState<NewClaimPage> {
                         Expanded(
                           child: Text(
                             'After submission, a fraud analysis will run automatically and a trust score will be assigned.',
-                            style: TextStyle(
-                                fontSize: 12, color: AppColors.info),
+                            style:
+                                TextStyle(fontSize: 12, color: AppColors.info),
                           ),
                         ),
                       ],
@@ -340,9 +343,12 @@ class _ClaimDetailBody extends StatelessWidget {
 
   String get _statusLabel {
     switch (claim.status) {
-      case 'needs_inspection': return 'Needs Inspection';
-      case 'under_review':     return 'Under Review';
-      case '':                 return 'Draft';
+      case 'needs_inspection':
+        return 'Needs Inspection';
+      case 'under_review':
+        return 'Under Review';
+      case '':
+        return 'Draft';
       default:
         return claim.status[0].toUpperCase() + claim.status.substring(1);
     }
@@ -350,12 +356,18 @@ class _ClaimDetailBody extends StatelessWidget {
 
   Color get _statusColor {
     switch (claim.status) {
-      case 'approved':         return AppColors.statusApproved;
-      case 'rejected':         return AppColors.statusRejected;
-      case 'needs_inspection': return AppColors.statusInspection;
-      case 'under_review':     return AppColors.statusUnderReview;
-      case 'submitted':        return AppColors.statusSubmitted;
-      default:                 return AppColors.statusDraft;
+      case 'approved':
+        return AppColors.statusApproved;
+      case 'rejected':
+        return AppColors.statusRejected;
+      case 'needs_inspection':
+        return AppColors.statusInspection;
+      case 'under_review':
+        return AppColors.statusUnderReview;
+      case 'submitted':
+        return AppColors.statusSubmitted;
+      default:
+        return AppColors.statusDraft;
     }
   }
 
@@ -370,8 +382,8 @@ class _ClaimDetailBody extends StatelessWidget {
         children: [
           // ── Status card ────────────────────────────────────────────────
           Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -391,9 +403,7 @@ class _ClaimDetailBody extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          claim.damageType
-                              .replaceAll('_', ' ')
-                              .toUpperCase(),
+                          claim.damageType.replaceAll('_', ' ').toUpperCase(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -432,8 +442,8 @@ class _ClaimDetailBody extends StatelessWidget {
           // ── Details ────────────────────────────────────────────────────
           const SizedBox(height: 12),
           Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -450,22 +460,19 @@ class _ClaimDetailBody extends StatelessWidget {
                   const SizedBox(height: 12),
                   if (claim.damageDescription != null) ...[
                     _DetailRow(
-                        label: 'Description',
-                        value: claim.damageDescription!),
+                        label: 'Description', value: claim.damageDescription!),
                     const Divider(height: 20),
                   ],
                   if (claim.estimatedLoss != null)
                     _DetailRow(
                       label: 'Estimated Loss',
-                      value:
-                          '₹${claim.estimatedLoss!.toStringAsFixed(0)}',
+                      value: '₹${claim.estimatedLoss!.toStringAsFixed(0)}',
                     ),
                   if (claim.affectedAcres != null) ...[
                     const SizedBox(height: 8),
                     _DetailRow(
                       label: 'Affected Acres',
-                      value:
-                          '${claim.affectedAcres!.toStringAsFixed(2)} acres',
+                      value: '${claim.affectedAcres!.toStringAsFixed(2)} acres',
                     ),
                   ],
                   if (claim.submittedAt != null) ...[
@@ -494,8 +501,7 @@ class _ClaimDetailBody extends StatelessWidget {
               color: AppColors.error.withValues(alpha: 0.05),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
-                side: BorderSide(
-                    color: AppColors.error.withValues(alpha: 0.2)),
+                side: BorderSide(color: AppColors.error.withValues(alpha: 0.2)),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -524,8 +530,7 @@ class _ClaimDetailBody extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Icon(Icons.circle,
-                                  size: 6,
-                                  color: AppColors.error),
+                                  size: 6, color: AppColors.error),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -546,15 +551,13 @@ class _ClaimDetailBody extends StatelessWidget {
           ],
 
           // ── Officer notes ──────────────────────────────────────────────
-          if (claim.officerNotes != null &&
-              claim.officerNotes!.isNotEmpty) ...[
+          if (claim.officerNotes != null && claim.officerNotes!.isNotEmpty) ...[
             const SizedBox(height: 12),
             Card(
               color: AppColors.info.withValues(alpha: 0.05),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
-                side: BorderSide(
-                    color: AppColors.info.withValues(alpha: 0.2)),
+                side: BorderSide(color: AppColors.info.withValues(alpha: 0.2)),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -609,8 +612,8 @@ class _DetailRow extends StatelessWidget {
           width: 120,
           child: Text(
             label,
-            style: const TextStyle(
-                fontSize: 13, color: AppColors.textSecondary),
+            style:
+                const TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
         ),
         Expanded(

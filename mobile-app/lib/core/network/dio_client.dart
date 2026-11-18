@@ -13,7 +13,7 @@ Dio createDio(Ref ref) {
       // networks and any other endpoints that may still be slower.
       connectTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
-      sendTimeout:    const Duration(seconds: 60),
+      sendTimeout: const Duration(seconds: 60),
       headers: {'Content-Type': 'application/json'},
     ),
   );

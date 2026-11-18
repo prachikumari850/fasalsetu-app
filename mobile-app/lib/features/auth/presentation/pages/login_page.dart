@@ -49,9 +49,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
 
     if (mounted) {
-  context.push(
-    '/auth/otp?email=${Uri.encodeComponent(_emailController.text.trim())}',
-  );
+      context.push(
+        '/auth/otp?email=${Uri.encodeComponent(_emailController.text.trim())}',
+      );
     }
   }
 
@@ -124,7 +124,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 24),
-
                       AppTextField(
                         label: l10n.emailLabel,
                         hint: l10n.emailHint,
@@ -148,9 +147,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           return null;
                         },
                       ),
-
                       const SizedBox(height: 20),
-
                       AppButton(
                         label: l10n.sendOtp,
                         onPressed: isLoading ? null : _sendOtp,

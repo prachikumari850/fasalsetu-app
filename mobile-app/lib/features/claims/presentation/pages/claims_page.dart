@@ -23,20 +23,29 @@ import 'package:fasalsetu/shared/widgets/empty_state_widget.dart';
 
 Color claimStatusColor(String status) {
   switch (status) {
-    case 'approved':         return AppColors.statusApproved;
-    case 'rejected':         return AppColors.statusRejected;
-    case 'needs_inspection': return AppColors.statusInspection;
-    case 'under_review':     return AppColors.statusUnderReview;
-    case 'submitted':        return AppColors.statusSubmitted;
-    default:                 return AppColors.statusDraft;
+    case 'approved':
+      return AppColors.statusApproved;
+    case 'rejected':
+      return AppColors.statusRejected;
+    case 'needs_inspection':
+      return AppColors.statusInspection;
+    case 'under_review':
+      return AppColors.statusUnderReview;
+    case 'submitted':
+      return AppColors.statusSubmitted;
+    default:
+      return AppColors.statusDraft;
   }
 }
 
 String claimStatusLabel(String status) {
   switch (status) {
-    case 'needs_inspection': return 'Needs Inspection';
-    case 'under_review':     return 'Under Review';
-    case '':                 return 'Draft';
+    case 'needs_inspection':
+      return 'Needs Inspection';
+    case 'under_review':
+      return 'Under Review';
+    case '':
+      return 'Draft';
     default:
       return status[0].toUpperCase() + status.substring(1);
   }
@@ -44,25 +53,39 @@ String claimStatusLabel(String status) {
 
 String damageTypeLabel(String type) {
   switch (type) {
-    case 'drought': return 'Drought';
-    case 'flood':   return 'Flood';
-    case 'hail':    return 'Hail';
-    case 'pest':    return 'Pest';
-    case 'disease': return 'Disease';
-    case 'fire':    return 'Fire';
-    default:        return 'Other';
+    case 'drought':
+      return 'Drought';
+    case 'flood':
+      return 'Flood';
+    case 'hail':
+      return 'Hail';
+    case 'pest':
+      return 'Pest';
+    case 'disease':
+      return 'Disease';
+    case 'fire':
+      return 'Fire';
+    default:
+      return 'Other';
   }
 }
 
 IconData damageTypeIcon(String type) {
   switch (type) {
-    case 'drought': return Icons.wb_sunny_outlined;
-    case 'flood':   return Icons.water_outlined;
-    case 'hail':    return Icons.ac_unit_outlined;
-    case 'pest':    return Icons.pest_control_outlined;
-    case 'disease': return Icons.coronavirus_outlined;
-    case 'fire':    return Icons.local_fire_department_outlined;
-    default:        return Icons.help_outline_rounded;
+    case 'drought':
+      return Icons.wb_sunny_outlined;
+    case 'flood':
+      return Icons.water_outlined;
+    case 'hail':
+      return Icons.ac_unit_outlined;
+    case 'pest':
+      return Icons.pest_control_outlined;
+    case 'disease':
+      return Icons.coronavirus_outlined;
+    case 'fire':
+      return Icons.local_fire_department_outlined;
+    default:
+      return Icons.help_outline_rounded;
   }
 }
 
@@ -71,11 +94,16 @@ TrustScoreEntity _toTrust(ClaimSummary claim) {
   final score = claim.trustScore;
   String? grade;
   if (score != null) {
-    if (score >= 80)      grade = 'A';
-    else if (score >= 60) grade = 'B';
-    else if (score >= 40) grade = 'C';
-    else if (score >= 20) grade = 'D';
-    else                  grade = 'F';
+    if (score >= 80)
+      grade = 'A';
+    else if (score >= 60)
+      grade = 'B';
+    else if (score >= 40)
+      grade = 'C';
+    else if (score >= 20)
+      grade = 'D';
+    else
+      grade = 'F';
   }
   return TrustScoreEntity(farmId: claim.farmId, score: score, grade: grade);
 }
@@ -158,9 +186,9 @@ class _ClaimCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color  = claimStatusColor(claim.status);
-    final trust  = _toTrust(claim);
-    final date   = claim.submittedAt?.split('T').first ?? '—';
+    final color = claimStatusColor(claim.status);
+    final trust = _toTrust(claim);
+    final date = claim.submittedAt?.split('T').first ?? '—';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -218,8 +246,8 @@ class _ClaimCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),

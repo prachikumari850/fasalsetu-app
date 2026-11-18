@@ -8,9 +8,10 @@ final cropRemoteDataSourceProvider = Provider<CropRemoteDataSource>(
   (ref) => CropRemoteDataSource(ref.watch(dioProvider)),
 );
 
-final farmImagesProvider = FutureProvider.autoDispose
-    .family<List<CropImageEntity>, String>(
-  (ref, farmId) => ref.watch(cropRemoteDataSourceProvider).getFarmImages(farmId),
+final farmImagesProvider =
+    FutureProvider.autoDispose.family<List<CropImageEntity>, String>(
+  (ref, farmId) =>
+      ref.watch(cropRemoteDataSourceProvider).getFarmImages(farmId),
 );
 
 // Timeline provider — keyed by farm ID

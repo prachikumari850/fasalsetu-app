@@ -21,6 +21,7 @@ class AdvisoryRemoteDataSource {
 
   Future<AdvisoryEntity> markRead(String advisoryId) async {
     final response = await _dio.put('/advisories/$advisoryId/read');
-    return AdvisoryEntity.fromJson(response.data['data'] as Map<String, dynamic>);
+    return AdvisoryEntity.fromJson(
+        response.data['data'] as Map<String, dynamic>);
   }
 }

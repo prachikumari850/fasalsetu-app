@@ -216,21 +216,17 @@ class _HealthBody extends StatelessWidget {
                   children: health.diseaseSummary.entries.map((entry) {
                     final total = health.diseaseSummary.values
                         .fold<int>(0, (sum, v) => sum + (v as int));
-                    final pct =
-                        total > 0 ? (entry.value as int) / total : 0.0;
+                    final pct = total > 0 ? (entry.value as int) / total : 0.0;
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                entry.key
-                                    .replaceAll('_', ' ')
-                                    .toUpperCase(),
+                                entry.key.replaceAll('_', ' ').toUpperCase(),
                                 style: const TextStyle(fontSize: 12),
                               ),
                               Text(

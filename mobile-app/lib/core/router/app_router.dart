@@ -23,7 +23,7 @@ import 'package:fasalsetu/features/profile/presentation/pages/profile_page.dart'
 import 'package:fasalsetu/features/health/presentation/pages/crop_health_page.dart';
 import 'package:fasalsetu/features/analysis/presentation/pages/image_analysis_page.dart';
 
-final _rootNavigatorKey  = GlobalKey<NavigatorState>(debugLabel: 'root');
+final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -36,11 +36,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     // Keep them off so signed storage URLs can never reach browser logs.
     debugLogDiagnostics: false,
     redirect: (context, state) {
-      final status         = authState.status;
+      final status = authState.status;
       final isAuthenticated = authState.isAuthenticated;
-      final loc            = state.matchedLocation;
-      final isAuthRoute    = loc.startsWith('/auth');
-      final isSplash       = loc == '/splash';
+      final loc = state.matchedLocation;
+      final isAuthRoute = loc.startsWith('/auth');
+      final isSplash = loc == '/splash';
 
       if (status == AuthStatus.unknown) return isSplash ? null : '/splash';
       if (isAuthenticated && (isAuthRoute || isSplash)) return '/dashboard';
@@ -83,7 +83,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/farms/:farmId/lifecycle',
         builder: (context, state) {
-          final farmId   = state.pathParameters['farmId']!;
+          final farmId = state.pathParameters['farmId']!;
           final farmName = state.uri.queryParameters['name'] ?? 'Farm';
           return CropLifecyclePage(farmId: farmId, farmName: farmName);
         },
@@ -91,7 +91,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/farms/:farmId/health',
         builder: (context, state) {
-          final farmId   = state.pathParameters['farmId']!;
+          final farmId = state.pathParameters['farmId']!;
           final farmName = state.uri.queryParameters['name'] ?? 'Farm';
           return CropHealthPage(farmId: farmId, farmName: farmName);
         },
@@ -99,8 +99,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/farms/:farmId/analysis/:imageId',
         builder: (context, state) {
-          final farmId   = state.pathParameters['farmId']!;
-          final imageId  = state.pathParameters['imageId']!;
+          final farmId = state.pathParameters['farmId']!;
+          final imageId = state.pathParameters['imageId']!;
           return ImageAnalysisPage(farmId: farmId, imageId: imageId);
         },
       ),

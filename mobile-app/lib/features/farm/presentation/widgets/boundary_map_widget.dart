@@ -150,8 +150,8 @@ class _BoundaryMapWidgetState extends State<BoundaryMapWidget> {
             const Spacer(),
             if (hasBoundary)
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.success.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -184,8 +184,7 @@ class _BoundaryMapWidgetState extends State<BoundaryMapWidget> {
               ),
               children: [
                 TileLayer(
-                  urlTemplate:
-                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.fasalsetu.app',
                 ),
                 if (_points.length >= 3)
@@ -224,8 +223,7 @@ class _BoundaryMapWidgetState extends State<BoundaryMapWidget> {
                                   ? AppColors.success
                                   : AppColors.primary,
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: Colors.white, width: 2),
+                              border: Border.all(color: Colors.white, width: 2),
                             ),
                           ),
                         ),
@@ -244,9 +242,7 @@ class _BoundaryMapWidgetState extends State<BoundaryMapWidget> {
               : 'Tap the map to mark farm corners (min. 3 points)',
           style: TextStyle(
             fontSize: 12,
-            color: hasBoundary
-                ? AppColors.success
-                : AppColors.textSecondary,
+            color: hasBoundary ? AppColors.success : AppColors.textSecondary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -273,7 +269,7 @@ class _ToolButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effective = color ?? AppColors.primary;
-    final enabled   = onTap != null && !isLoading;
+    final enabled = onTap != null && !isLoading;
 
     return GestureDetector(
       onTap: enabled ? onTap : null,
