@@ -19,9 +19,11 @@ from app.core.exceptions import (
     ServiceUnavailableException,
 )
 from datetime import datetime, timezone
+import asyncio
 import uuid
 import httpx
 import structlog
+from app.ai.image_filter import check_crop_image
 
 logger = structlog.get_logger()
 
@@ -251,6 +253,28 @@ class CropService:
         if error:
             raise ValidationException(error)
 
+        # NEW: Check whether the uploaded image is a crop/plant image
+        try:
+            image_check = await asyncio.to_thread(
+                check_crop_image,
+                image_bytes,
+            )
+        except Exception as e:
+            logger.error(
+                "Crop image screening failed",
+                error=str(e),
+            )
+            raise ServiceUnavailableException(
+                "Image screening is temporarily unavailable. Please try again."
+            ) from e
+
+        if image_check["decision"] == "rejected":
+            raise ValidationException(image_check["message"])
+
+        if image_check["decision"] == "review":
+            raise ValidationException(image_check["message"])
+
+        # Existing functionality continues
         image_hash = compute_phash(image_bytes)
 
         farm = await self.farm_repo.get_with_boundary(farm_id)

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Brand
   static const Color primary = Color(0xFF2E7D32); // Forest green
   static const Color primaryLight = Color(0xFF60AD5E);
   static const Color primaryDark = Color(0xFF005005);
@@ -11,7 +10,6 @@ class AppColors {
   static const Color secondaryLight = Color(0xFFFFD95A);
   static const Color secondaryDark = Color(0xFFC17900);
 
-  // Semantic
   static const Color success = Color(0xFF388E3C);
   static const Color warning = Color(0xFFF57C00);
   static const Color error = Color(0xFFC62828);
